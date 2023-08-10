@@ -144,7 +144,7 @@ namespace Odin.Auth.Service.Cognito
 
         public async Task<ListUsersResponse> ListUsersAsync(ListUsersRequest request)
         {
-            if (request.Filter.Contains("user.not.confirmed") || request.Filter.Contains("user.not.found"))
+            if (request.Filter.Equals("user.not.confirmed") || request.Filter.Contains("user.not.found"))
                 return null;
 
             return await Task.FromResult(new ListUsersResponse

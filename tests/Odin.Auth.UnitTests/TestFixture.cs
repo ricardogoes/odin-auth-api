@@ -16,9 +16,22 @@ namespace Odin.Auth.UnitTests
         {
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
                 .Build();
 
-            var appSettings = builder.Get<AppSettings>();
+            var appSettings = new AppSettings
+            {
+                AWSCognitoSettings = new AWSCognitoSettings
+                {
+                    AccessKeyId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessKeyId"),
+                    AccessSecretKey = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessSecretKey"),
+                    AppClientId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AppClientId"),
+                    CognitoAuthorityUrl = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoAuthorityUrl"),
+                    CognitoIdpUrl = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoIdpUrl"),
+                    Region = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__Region"),
+                    UserPoolId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__UserPoolId")
+                }
+            };
 
             services
                 .AddSingleton(appSettings)
