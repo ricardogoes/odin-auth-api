@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odin.Auth.Api", "src\Odin.Auth.Api\Odin.Auth.Api.csproj", "{24CFD6D6-55EA-45DA-AD05-089C8F788881}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odin.Auth.Domain", "src\Odin.Auth.Domain\Odin.Auth.Domain.csproj", "{FF384A76-6711-4723-8750-AEECA304686D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odin.Auth.Service", "src\Odin.Auth.Service\Odin.Auth.Service.csproj", "{6AE1B456-8F8B-4D4B-BDD0-DF0FC5341105}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{10C9777B-1951-4592-BC96-810A9BA4C034}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6132711E-43CB-4A69-98E2-9FBC950A75FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Odin.Auth.UnitTests", "tests\Odin.Auth.UnitTests\Odin.Auth.UnitTests.csproj", "{DE5224DA-2548-4C83-B465-C44874F3A3F2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24CFD6D6-55EA-45DA-AD05-089C8F788881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CFD6D6-55EA-45DA-AD05-089C8F788881}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24CFD6D6-55EA-45DA-AD05-089C8F788881}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24CFD6D6-55EA-45DA-AD05-089C8F788881}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF384A76-6711-4723-8750-AEECA304686D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF384A76-6711-4723-8750-AEECA304686D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF384A76-6711-4723-8750-AEECA304686D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF384A76-6711-4723-8750-AEECA304686D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AE1B456-8F8B-4D4B-BDD0-DF0FC5341105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AE1B456-8F8B-4D4B-BDD0-DF0FC5341105}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AE1B456-8F8B-4D4B-BDD0-DF0FC5341105}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AE1B456-8F8B-4D4B-BDD0-DF0FC5341105}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE5224DA-2548-4C83-B465-C44874F3A3F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE5224DA-2548-4C83-B465-C44874F3A3F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE5224DA-2548-4C83-B465-C44874F3A3F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE5224DA-2548-4C83-B465-C44874F3A3F2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{24CFD6D6-55EA-45DA-AD05-089C8F788881} = {10C9777B-1951-4592-BC96-810A9BA4C034}
+		{FF384A76-6711-4723-8750-AEECA304686D} = {10C9777B-1951-4592-BC96-810A9BA4C034}
+		{6AE1B456-8F8B-4D4B-BDD0-DF0FC5341105} = {10C9777B-1951-4592-BC96-810A9BA4C034}
+		{DE5224DA-2548-4C83-B465-C44874F3A3F2} = {6132711E-43CB-4A69-98E2-9FBC950A75FC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6F56F86A-3280-4DDA-952F-C70D3B117ED2}
+	EndGlobalSection
+EndGlobal
