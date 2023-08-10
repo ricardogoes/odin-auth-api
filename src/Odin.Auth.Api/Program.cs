@@ -9,12 +9,24 @@ using Odin.Auth.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appSettings = builder.Configuration.Get<AppSettings>();
-builder.Services.AddSingleton(appSettings);
 
-builder.Services.AddScoped<ValidationFilterAttribute>();
+var appSettings = new AppSettings
+{
+    AWSCognitoSettings = new AWSCognitoSettings
+    {
+        AccessKeyId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessKeyId"),
+        AccessSecretKey = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessSecretKey"),
+        AppClientId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AppClientId"),
+        CognitoAuthorityUrl = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoAuthorityUrl"),
+        CognitoIdpUrl = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoIdpUrl"),
+        Region = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__Region"),
+        UserPoolId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__UserPoolId")
+    }
+};
 
 // Add services to the container.
+builder.Services.AddSingleton(appSettings);
+builder.Services.AddScoped<ValidationFilterAttribute>();
 ServiceBase.GetInstance<ServiceCognito>().Add(builder.Services);
 ServiceBase.GetInstance<ServiceServices>().Add(builder.Services);
 
@@ -41,7 +53,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.Authority = appSettings.AWSCognitoSettings.CognitoAuthorityUrl;
+    options.Authority = "";// appSettings.AWSCognitoSettings.CognitoAuthorityUrl;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
