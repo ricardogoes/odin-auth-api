@@ -53,7 +53,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.Authority = "";// appSettings.AWSCognitoSettings.CognitoAuthorityUrl;
+    options.Authority = appSettings.AWSCognitoSettings.CognitoAuthorityUrl;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
