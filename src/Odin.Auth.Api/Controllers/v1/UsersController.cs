@@ -1,12 +1,9 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Api.Attributes;
-using Odin.Auth.Domain.Interfaces.Services;
-using Odin.Auth.Domain.Models;
-using Odin.Auth.Domain.Models.ChangeStatusUser;
-using Odin.Auth.Domain.Models.UpdateProfile;
-using Odin.Auth.Domain.Models.UserLogin;
+using Odin.Auth.Application.AddUser;
+using Odin.Auth.Application.ChangeStatusUser;
+using Odin.Auth.Application.UpdateProfile;
 
 namespace Odin.Auth.Api.Controllers.v1
 {
@@ -17,77 +14,45 @@ namespace Odin.Auth.Api.Controllers.v1
     [Route("api/v{version:apiVersion}/users")]
     public class UsersController : BaseController
     {
-        private readonly ICognitoUserService _cognitoUserService;
+        private readonly IMediator _mediator;
 
-        public UsersController(ICognitoUserService cognitoUserService,
+        public UsersController(IMediator mediator,
             ILogger<AuthController> logger)
             : base(logger)
         {
-            _cognitoUserService = cognitoUserService ?? throw new ArgumentNullException(nameof(cognitoUserService));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
+
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> InsertUserAsync([FromBody] InsertUserRequest request)
+        [ProducesResponseType(typeof(AddUserOutput), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> InsertUserAsync([FromBody] AddUserInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = await _cognitoUserService.InsertUserAsync(request);
-                return Ok(new ApiResponse(ApiResponseState.Success, response));
-            }
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            var output = await _mediator.Send(request, cancellationToken);
+            return Ok(output);
         }
 
         [HttpPut]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> UpdateUserAsync([FromBody] UpdateProfileRequest request)
+        [ProducesResponseType(typeof(UpdateProfileOutput), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UpdateProfileInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = await _cognitoUserService.UpdateUserAttributesAsync(request);
-                return Ok(new ApiResponse(ApiResponseState.Success, response));
-            }
-            catch (UserNotFoundException)
-            {
-                return NotFound(new ApiResponse(ApiResponseState.Failed, "User not found"));
-            }
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            var output = await _mediator.Send(request, cancellationToken);
+            return Ok(output);
         }
 
         [HttpPut("status")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> ChangeStatusUserAsync([FromBody] ChangeStatusUserRequest request)
+        [ProducesResponseType(typeof(ChangeStatusUserOutput), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> ChangeStatusUserAsync([FromBody] ChangeStatusUserInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = new UpdateProfileResponse();
-
-                switch(request.Action)
-                {
-                    case "ENABLE":
-                        response = await _cognitoUserService.EnableUserAsync(request.Username);
-                        break;
-                    case "DISABLE":
-                        response = await _cognitoUserService.DisableUserAsync(request.Username);
-                        break;
-                }
-
-                return Ok(new ApiResponse(ApiResponseState.Success, response));
-            }
-            catch (UserNotFoundException)
-            {
-                return NotFound(new ApiResponse(ApiResponseState.Failed, "User not found"));
-            }   
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            var output = await _mediator.Send(request, cancellationToken);
+            return Ok(output);
         }
     }
 }

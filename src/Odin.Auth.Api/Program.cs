@@ -2,17 +2,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
-using Odin.Auth.Api;
-using Odin.Auth.Api.Attributes;
-using Odin.Auth.Api.IoC;
-using Odin.Auth.Domain.Models;
+using Odin.Auth.Api.Configurations;
+using Odin.Auth.Api.Filters;
+using Odin.Auth.Application.Common;
+using Odin.Auth.Infra.Cognito.Models;
+using Odin.Auth.Infra.Messaging.Policies;
+using Odin.Baseline.Api.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 var appSettings = new AppSettings
 {
-    AWSCognitoSettings = new AWSCognitoSettings
+    AWSCognitoSettings = new CognitoSettings
     {
         AccessKeyId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessKeyId"),
         AccessSecretKey = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessSecretKey"),
@@ -24,15 +26,25 @@ var appSettings = new AppSettings
     }
 };
 
+var cognitoSettings = appSettings.AWSCognitoSettings;
+
 // Add services to the container.
 builder.Services.AddSingleton(appSettings);
-builder.Services.AddScoped<ValidationFilterAttribute>();
-ServiceBase.GetInstance<ServiceCognito>().Add(builder.Services);
-ServiceBase.GetInstance<ServiceServices>().Add(builder.Services);
+builder.Services.AddSingleton(cognitoSettings);
+builder.Services.AddApplications();
+builder.Services.AddRepositories();
 
-builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+builder.Services
+    .AddControllers(options =>
+    {
+        options.Filters.Add(typeof(ApiExceptionFilter));
+    })
+    .AddJsonOptions(jsonOptions =>
+    {
+        jsonOptions.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCasePolicy();
+        jsonOptions.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -91,8 +103,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
 app.UseHttpsRedirection();
 

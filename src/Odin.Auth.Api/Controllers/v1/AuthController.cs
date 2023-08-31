@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Api.Attributes;
-using Odin.Auth.Domain.Interfaces.Services;
-using Odin.Auth.Domain.Models;
-using Odin.Auth.Domain.Models.UserLogin;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Odin.Auth.Application.ChangePassword;
+using Odin.Auth.Application.ForgotPassword;
+using Odin.Auth.Application.Login;
+using Odin.Auth.Application.Logout;
+using Odin.Auth.Application.ResetPassword;
 
 namespace Odin.Auth.Api.Controllers.v1
 {
@@ -12,87 +14,59 @@ namespace Odin.Auth.Api.Controllers.v1
     [Route("api/v{version:apiVersion}/auth")]
     public class AuthController : BaseController
     {
-        private readonly ICognitoAuthService _cognitoAuthService;
+        private readonly IMediator _mediator;
 
-        public AuthController(ICognitoAuthService cognitoAuthService, ILogger<AuthController> logger)
+        public AuthController(IMediator mediator, ILogger<AuthController> logger)
             : base(logger)
         {
-            _cognitoAuthService = cognitoAuthService ?? throw new ArgumentNullException(nameof(cognitoAuthService));
+            _mediator = mediator;
         }
 
         [HttpPost("sign-in")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> SignInAsync([FromBody] UserAuthRequest request)
+        [ProducesResponseType(typeof(LoginOutput), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SignInAsync([FromBody] LoginInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var loginResponse = await _cognitoAuthService.TryLoginAsync(request);
-                return Ok(new ApiResponse(ApiResponseState.Success, loginResponse));
-            }
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            var output = await _mediator.Send(request, cancellationToken);
+            return Ok(output);
+
         }
 
         [HttpPost("sign-out")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> SignOutAsync([FromBody] UserSignOutRequest request)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SignOutAsync([FromBody] LogoutInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _cognitoAuthService.TryLogOutAsync(request);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            await _mediator.Send(request, cancellationToken);
+            return NoContent();
         }
 
         [HttpPost("change-password")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> ChangePasswordAsync([FromBody] Domain.Models.ChangePassword.ChangePasswordRequest request)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var changePasswordResponse = await _cognitoAuthService.TryChangePasswordAsync(request);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            await _mediator.Send(request, cancellationToken);
+            return NoContent();
         }
 
         [HttpPost("forgot-password")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> ForgotPasswordAsync([FromBody] Domain.Models.ForgotPassword.ForgotPasswordRequest request)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var forgotPasswordResponse = await _cognitoAuthService.TryInitForgotPasswordAsync(request);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            await _mediator.Send(request, cancellationToken);
+            return NoContent();
         }
 
         [HttpPost("reset-password")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> ResetPasswordAsync([FromBody] Domain.Models.ResetPassword.ResetPasswordRequest request)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordInput request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _cognitoAuthService.TryResetPasswordWithConfirmationCodeAsync(request);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return HandleError(ex);
-            }
+            await _mediator.Send(request, cancellationToken);
+            return NoContent();
         }
     }
 }

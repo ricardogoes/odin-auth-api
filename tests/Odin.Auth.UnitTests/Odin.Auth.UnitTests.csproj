@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TestResults\**" />
+    <EmbeddedResource Remove="TestResults\**" />
+    <None Remove="TestResults\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
 
@@ -48,12 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Odin.Auth.Domain\Odin.Auth.Domain.csproj" />
-    <ProjectReference Include="..\..\src\Odin.Auth.Service\Odin.Auth.Service.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\..\src\Odin.Auth.Application\Odin.Auth.Application.csproj" />
   </ItemGroup>
 
 </Project>
