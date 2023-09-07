@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Domain.Models;
 
 namespace Odin.Auth.Api.Controllers
 {
@@ -13,11 +12,5 @@ namespace Odin.Auth.Api.Controllers
         {
             _logger = logger;
         }
-
-        protected IActionResult HandleError(Exception ex)
-        {
-            return StatusCode(500, new ApiResponse(ApiResponseState.Failed, "An error ocurred, please try again. If the error persists contact the System Administrator"));
-        }
     }
-
 }
