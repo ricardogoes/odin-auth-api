@@ -1,0 +1,45 @@
+{
+  "tasks": [
+    {
+      "name": "dotnet-format",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": [
+        "dotnet-format",
+        "--include",
+        "${staged}"
+      ],
+      "include": [ "**/*.cs" ]
+    },
+    {
+      "name": "commit-message-linter",
+      "command": "dotnet",
+      "args": [
+        "husky",
+        "exec",
+        ".husky/csx/commit-lint.csx",
+        "--args",
+        "${args}"
+      ]
+    },
+    {
+      "name": "warning-check",
+      "command": "dotnet",
+      "group": "pre-push",
+      "args": [
+        "build",
+        "/warnaserror"
+      ],
+      "include": [ "**/*.cs" ]
+    },
+    {
+      "name": "unit-testing",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": [
+        "test",
+        "tests/Odin.Auth.UnitTests/Odin.Auth.UnitTests.csproj"
+      ]
+    }
+  ]
+}
