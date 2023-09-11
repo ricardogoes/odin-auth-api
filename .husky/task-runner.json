@@ -1,17 +1,6 @@
 {
   "tasks": [
     {
-      "name": "dotnet-format",
-      "group": "pre-commit",
-      "command": "dotnet",
-      "args": [
-        "dotnet-format",
-        "--include",
-        "${staged}"
-      ],
-      "include": [ "**/*.cs" ]
-    },
-    {
       "name": "commit-message-linter",
       "command": "dotnet",
       "args": [
@@ -25,7 +14,7 @@
     {
       "name": "warning-check",
       "command": "dotnet",
-      "group": "pre-push",
+      "group": "pre-commit",
       "args": [
         "build",
         "/warnaserror"
