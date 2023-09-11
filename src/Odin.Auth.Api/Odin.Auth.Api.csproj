@@ -24,12 +24,5 @@
     <ProjectReference Include="..\Odin.Auth.Application\Odin.Auth.Application.csproj" />
     <ProjectReference Include="..\Odin.Auth.Infra.Messaging\Odin.Auth.Infra.Messaging.csproj" />
   </ItemGroup>
-	
-  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-    <ItemGroup>
-        <_CustomFiles Include="..\..\.github\commit-msg" />
-    </ItemGroup>
-    <Copy SourceFiles="@(_CustomFiles)" DestinationFolder="./../.git/hooks" />
-</Target>
 
 </Project>
