@@ -1,17 +1,18 @@
 name: push
 
 on: 
-  workflow_run:
-    workflows: build and test
-    branches: main
-    types: completed
+  pull_request:
+    branches:
+      - main
 
 jobs:
+  tests:
+    uses: ./.github/workflows/build-test.yaml
   push:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-
-    if: github.ref == 'refs/heads/main'
+    name: push to Dockerhub
+    needs: [build-and-test]
+    runs-on: ubuntu-latest    
+    
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -31,3 +32,4 @@ jobs:
         with:
           push: true
           tags: ricardoduquegoes/odin-auth-api:latest
+          
