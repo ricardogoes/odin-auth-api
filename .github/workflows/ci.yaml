@@ -1,0 +1,53 @@
+name: build test and push
+
+on: 
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+  
+      - name: Setup .NET Core SDK 
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+      
+      - name: Install dependencies
+        run: dotnet restore
+      
+      - name: Build API
+        run: dotnet build --configuration Release --no-restore
+              
+      - name: Run unit tests
+        run: dotnet test ./tests/Odin.Auth.UnitTests/Odin.Auth.UnitTests.csproj --no-restore --verbosity normal
+  
+  push:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    if: success() && github.ref == 'refs/heads/main'
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push to Dockerhub
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ricardoduquegoes/odin-auth-api:latest
