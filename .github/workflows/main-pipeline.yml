@@ -1,19 +1,31 @@
-name: push
+name: main-pipeline
 
 on: 
   pull_request:
     branches:
       - main
 
-jobs:
-  tests:
-    uses: ./.github/workflows/build-test.yaml
-  push:
-    name: push to Dockerhub
-    needs: [build-and-test]
-    runs-on: ubuntu-latest    
+jobs:  
+  main-pipeline:
+    runs-on: ubuntu-latest
     
     steps:
+      - uses: actions/checkout@v3
+  
+      - name: Setup .NET Core SDK 
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+      
+      - name: Install dependencies
+        run: dotnet restore
+      
+      - name: Build API
+        run: dotnet build --configuration Release --no-restore
+              
+      - name: Run unit tests
+        run: dotnet test ./tests/Odin.Auth.UnitTests/Odin.Auth.UnitTests.csproj --no-restore --verbosity normal
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 

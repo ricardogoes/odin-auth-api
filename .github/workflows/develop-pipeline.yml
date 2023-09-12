@@ -1,16 +1,12 @@
-name: build-and-test
+name: develop-pipeline
 
 on: 
   pull_request:
     branches:
       - develop
-      - main
-  workflow_call:
-    branches:
-      - main
-
+  
 jobs:
-  build-and-test:
+  develop-pipeline:
     runs-on: ubuntu-latest
     
     steps:
