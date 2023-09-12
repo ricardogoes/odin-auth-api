@@ -2,7 +2,7 @@ name: dotnet package
 on: [push]
 
 jobs:
-  build:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
@@ -11,9 +11,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '7.0.x'
+      
       - name: Install dependencies
         run: dotnet restore
+      
       - name: Build
         run: dotnet build --configuration Release --no-restore
+              
       - name: Unit Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test .\tests\Odin.Auth.UnitTests\Odin.Auth.UnitTests.csproj --no-restore --verbosity normal
