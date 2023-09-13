@@ -20,9 +20,6 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       
-      - name: Build API
-        run: dotnet build --configuration Release --no-restore
-              
       - name: Run unit tests
         run: dotnet test ./tests/Odin.Auth.UnitTests/Odin.Auth.UnitTests.csproj --no-restore --verbosity normal
 
@@ -63,6 +60,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"ricardogoes_odin-auth-api" /o:"odin-project" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          <insert_your_clean_build_command>
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          dotnet-sonarscanner begin /k:"ricardogoes_odin-auth-api" /o:"odin-project" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build --configuration Release --no-restore
+          dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
