@@ -17,11 +17,7 @@ namespace Odin.Auth.UnitTests.Application.Login
         public void DontValidateWhenEmptyFirstName()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new LoginInput
-            {
-                Username = "",
-                Password = "unit.testing"
-            };
+            var input = new LoginInput("", "unit.testing");
 
             var validator = new LoginInputValidator();
 
@@ -38,11 +34,7 @@ namespace Odin.Auth.UnitTests.Application.Login
         public void DontValidateWhenEmptyLastName()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new LoginInput
-            {
-                Username = _fixture.Faker.Person.UserName,
-                Password = ""
-            };
+            var input = new LoginInput(_fixture.Faker.Person.UserName, "");
 
             var validator = new LoginInputValidator();
 

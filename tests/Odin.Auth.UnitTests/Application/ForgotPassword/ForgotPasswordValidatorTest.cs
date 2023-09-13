@@ -17,10 +17,7 @@ namespace Odin.Auth.UnitTests.Application.ForgotPassword
         public void DontValidateWhenEmptyFirstName()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new App.ForgotPasswordInput
-            {
-                Username = ""
-            };
+            var input = new App.ForgotPasswordInput("");
 
             var validator = new App.ForgotPasswordInputValidator();
 

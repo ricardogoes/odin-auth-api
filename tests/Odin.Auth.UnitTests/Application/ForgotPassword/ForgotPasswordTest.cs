@@ -44,13 +44,10 @@ namespace Odin.Auth.UnitTests.Application.ForgotPassword
             };
 
             _commonServiceMock.Setup(s => s.FindUsersByEmailAddressAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(expectedResult));
+                .Returns(() => Task.FromResult(expectedResult)!);
 
             var app = new App.ForgotPassword(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new App.ForgotPasswordInput
-            {
-                Username = "unit.testing"
-            }, CancellationToken.None);
+            var response = await app.Handle(new App.ForgotPasswordInput("unit.testing"), CancellationToken.None);
 
             response.Username.Should().Be("unit.testing");
         }
@@ -60,12 +57,9 @@ namespace Odin.Auth.UnitTests.Application.ForgotPassword
         public async Task TryInitForgotPasswordAsync_UserNotFound()
         {
             var app = new App.ForgotPassword(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new App.ForgotPasswordInput
-            {
-                Username = "user.not.found"
-            }, CancellationToken.None);
+            var response = await app.Handle(new App.ForgotPasswordInput("user.not.found"),  CancellationToken.None);
 
-            response.Username.Should().BeEmpty();
+            response.Username.Should().BeNull();
             response.Message.Should().Be("Error trying to recover user data");
         }
 
@@ -118,13 +112,10 @@ namespace Odin.Auth.UnitTests.Application.ForgotPassword
             };
 
             _commonServiceMock.Setup(s => s.FindUsersByEmailAddressAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(expectedResult));
+                .Returns(() => Task.FromResult(expectedResult)!);
 
             var app = new App.ForgotPassword(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new App.ForgotPasswordInput
-            {
-                Username = "user.filtered.not.found"
-            }, CancellationToken.None);
+            var response = await app.Handle(new App.ForgotPasswordInput("user.filtered.not.found"), CancellationToken.None);
 
             response.Username.Should().Be("user.filtered.not.found");
             response.Message.Should().Be("No users with the given username found");
@@ -152,13 +143,10 @@ namespace Odin.Auth.UnitTests.Application.ForgotPassword
             };
 
             _commonServiceMock.Setup(s => s.FindUsersByEmailAddressAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(expectedResult));
+                .Returns(() => Task.FromResult(expectedResult)!);
 
             var app = new App.ForgotPassword(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new App.ForgotPasswordInput
-            {
-                Username = "user.with.error"
-            }, CancellationToken.None);
+            var response = await app.Handle(new App.ForgotPasswordInput("user.with.error"), CancellationToken.None);
 
             response.Username.Should().Be("user.with.error");
             response.Message.Should().Be("ListUsers Response: BadRequest");

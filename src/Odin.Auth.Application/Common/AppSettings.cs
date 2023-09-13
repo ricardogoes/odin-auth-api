@@ -4,8 +4,11 @@ namespace Odin.Auth.Application.Common
 {
     public class AppSettings
     {
-        public CognitoSettings AWSCognitoSettings { get; set; }
-    }
+        public CognitoSettings AWSCognitoSettings { get; private set; }
 
-    
+        public AppSettings(CognitoSettings awsCognitoSettings)
+        {
+            AWSCognitoSettings = awsCognitoSettings;
+        }
+    }
 }

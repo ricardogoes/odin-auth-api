@@ -1,10 +1,15 @@
 ﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
 
 namespace Odin.Auth.Application.ForgotPassword
 {
     public class ForgotPasswordInput : IRequest<ForgotPasswordOutput>
-    {
-        public string Username { get; set; }
+    {      
+
+        public string Username { get; private set; }
+
+        public ForgotPasswordInput(string username)
+        {
+            Username = username;
+        }
     }
 }

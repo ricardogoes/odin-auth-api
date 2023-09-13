@@ -55,16 +55,16 @@ namespace Odin.Auth.Application.Common
             var attributes = userResponse.UserAttributes;
 
             return new UserProfileResponse
-            {
-                Username = username,
-                FirstName = attributes.First(x => x.Name == "given_name").Value ?? string.Empty,
-                LastName = attributes.First(x => x.Name == "family_name").Value ?? string.Empty,
-                PreferredUsername = attributes.First(x => x.Name == "preferred_username").Value ?? string.Empty,
-                EmailAddress = attributes.First(x => x.Name == "email").Value ?? string.Empty
-            };
+            (
+                username,
+                attributes.First(x => x.Name == "given_name").Value ?? string.Empty,
+                attributes.First(x => x.Name == "family_name").Value ?? string.Empty,
+                attributes.First(x => x.Name == "email").Value ?? string.Empty,
+                attributes.First(x => x.Name == "preferred_username").Value ?? string.Empty
+            );
         }
 
-        public async Task<ListUsersResponse> FindUsersByEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
+        public async Task<ListUsersResponse?> FindUsersByEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
         {
             var listUsersRequest = new ListUsersRequest
             {

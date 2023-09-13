@@ -55,10 +55,7 @@ namespace Odin.Auth.Application.UpdateProfile
 
             await _awsIdentityRepository.AdminUpdateUserAttributesAsync(userAttributesRequest);
 
-            return new UpdateProfileOutput
-            {
-                Username = request.Username
-            };
+            return new UpdateProfileOutput(request.Username);
         }
     }
 }

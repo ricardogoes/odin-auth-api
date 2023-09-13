@@ -47,7 +47,7 @@ namespace Odin.Auth.Application.AddUser
                 Value = request.EmailAddress
             });
 
-            var r = await _awsIdentityRepository
+            await _awsIdentityRepository
                 .AdminCreateUserAsync(adminCreateUserRequest)
                 .ConfigureAwait(false);
 
@@ -102,11 +102,7 @@ namespace Odin.Auth.Application.AddUser
                 .AdminRespondToAuthChallengeAsync(adminRespondToAuthChallengeRequest)
                 .ConfigureAwait(false);
 
-            return new AddUserOutput
-            {
-                Username = request.Username,
-                EmailAddress = request.EmailAddress
-            };
+            return new AddUserOutput(request.Username, request.EmailAddress);
         }
     }
 }

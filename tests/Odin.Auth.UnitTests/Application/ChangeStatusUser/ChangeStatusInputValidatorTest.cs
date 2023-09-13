@@ -18,10 +18,10 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new ChangeStatusUserInput
-            {
-                Username = "",
-                Action = ChangeStatusAction.ACTIVATE
-            };
+            (
+                username: "",
+                action: ChangeStatusAction.ACTIVATE
+            );
 
             var validator = new ChangeStatusUserInputValidator();
 
@@ -39,10 +39,10 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new ChangeStatusUserInput
-            {
-                Username = _fixture.Faker.Person.UserName,
-                Action = null
-            };
+            (
+                username: _fixture.Faker.Person.UserName,
+                action: null
+            );
 
             var validator = new ChangeStatusUserInputValidator();
 

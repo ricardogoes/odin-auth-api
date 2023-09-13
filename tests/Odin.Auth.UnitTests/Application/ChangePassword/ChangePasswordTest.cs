@@ -39,11 +39,11 @@ namespace Odin.Auth.UnitTests.Application.ChangePassword
 
             var app = new App.ChangePassword(_commonServiceMock.Object, _awsIdentityRepository);
             var response = await app.Handle(new App.ChangePasswordInput
-            {
-                Username = "unit.testing",
-                NewPassword = "new_password",
-                CurrentPassword = "current_password"
-            }, CancellationToken.None);
+            (
+                username: "unit.testing",
+                newPassword: "new_password",
+                currentPassword: "current_password"
+            ), CancellationToken.None);
 
             response.Username.Should().Be("unit.testing");
         }

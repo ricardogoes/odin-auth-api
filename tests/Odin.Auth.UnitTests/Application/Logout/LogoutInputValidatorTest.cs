@@ -17,11 +17,7 @@ namespace Odin.Auth.UnitTests.Application.Logout
         public void DontValidateWhenEmptyFirstName()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new LogoutInput
-            {
-                Username = "",
-                AccessToken = "unit.testing.token"
-            };
+            var input = new LogoutInput("", "unit.testing.token");
 
             var validator = new LogoutInputValidator();
 
@@ -38,11 +34,7 @@ namespace Odin.Auth.UnitTests.Application.Logout
         public void DontValidateWhenEmptyLastName()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new LogoutInput
-            {
-                Username = _fixture.Faker.Person.UserName,
-                AccessToken = ""
-            };
+            var input = new LogoutInput(_fixture.Faker.Person.UserName, "");
 
             var validator = new LogoutInputValidator();
 

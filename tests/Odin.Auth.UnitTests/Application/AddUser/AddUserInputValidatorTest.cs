@@ -18,13 +18,13 @@ namespace Odin.Auth.UnitTests.Application.AddUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new AddUserInput
-            {
-                FirstName = "",
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                Username = _fixture.Faker.Person.UserName,
-                Password = "unit.testing"
-            };
+            (
+                firstName: "",
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: _fixture.Faker.Person.Email,
+                username: _fixture.Faker.Person.UserName,
+                password: "unit.testing"
+            );
 
             var validator = new AddUserInputValidator();
 
@@ -42,13 +42,13 @@ namespace Odin.Auth.UnitTests.Application.AddUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new AddUserInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = "",
-                EmailAddress = _fixture.Faker.Person.Email,
-                Username = _fixture.Faker.Person.UserName,
-                Password = "unit.testing"
-            };
+            (
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: "",
+                emailAddress: _fixture.Faker.Person.Email,
+                username: _fixture.Faker.Person.UserName,
+                password: "unit.testing"
+            );
 
             var validator = new AddUserInputValidator();
 
@@ -66,13 +66,13 @@ namespace Odin.Auth.UnitTests.Application.AddUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new AddUserInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = "",
-                Username = _fixture.Faker.Person.UserName,
-                Password = "unit.testing"
-            };
+            (
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: "",
+                username: _fixture.Faker.Person.UserName,
+                password: "unit.testing"
+            );
 
             var validator = new AddUserInputValidator();
 
@@ -93,13 +93,13 @@ namespace Odin.Auth.UnitTests.Application.AddUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new AddUserInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = email,
-                Username = _fixture.Faker.Person.UserName,
-                Password = "unit.testing"
-            };
+            (
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: email,
+                username: _fixture.Faker.Person.UserName,
+                password: "unit.testing"
+            );
 
             var validator = new AddUserInputValidator();
 
@@ -117,13 +117,13 @@ namespace Odin.Auth.UnitTests.Application.AddUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new AddUserInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                Username = "",
-                Password = "unit.testing"
-            };
+            (
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: _fixture.Faker.Person.Email,
+                username: "",
+                password: "unit.testing"
+            );
 
             var validator = new AddUserInputValidator();
 
@@ -141,13 +141,13 @@ namespace Odin.Auth.UnitTests.Application.AddUser
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new AddUserInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                Username = _fixture.Faker.Person.UserName,
-                Password = ""
-            };
+            (
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: _fixture.Faker.Person.Email,
+                username: _fixture.Faker.Person.UserName,
+                password: ""
+            );
 
             var validator = new AddUserInputValidator();
 

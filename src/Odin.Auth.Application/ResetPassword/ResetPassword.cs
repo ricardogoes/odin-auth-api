@@ -32,10 +32,7 @@ namespace Odin.Auth.Application.ResetPassword
                 throw new Exception("Can't reset password");
             }
 
-            return new ResetPasswordOutput
-            {
-                Username = request.Username
-            };
+            return new ResetPasswordOutput(request.Username);
         }
     }
 }

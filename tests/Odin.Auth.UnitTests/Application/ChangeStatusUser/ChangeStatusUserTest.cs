@@ -3,8 +3,6 @@ using FluentAssertions;
 using Moq;
 using Odin.Auth.Application.Common;
 using Odin.Auth.Infra.Cognito;
-using Xunit.Abstractions;
-using Xunit.Sdk;
 using App = Odin.Auth.Application.ChangeStatusUser;
 
 namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
@@ -35,10 +33,10 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
             var app = new App.ChangeStatusUser(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
 
             var ex = Assert.Throws<AggregateException>(() => app.Handle(new App.ChangeStatusUserInput
-            {
-                Username = _fixture.Faker.Person.UserName,
-                Action = App.ChangeStatusAction.ACTIVATE
-            }, CancellationToken.None).Result);
+            (
+                username: _fixture.Faker.Person.UserName,
+                action: App.ChangeStatusAction.ACTIVATE
+            ), CancellationToken.None).Result);
 
             ex.Message.Should().Contain("User not found");
         }
@@ -48,13 +46,13 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
         public async Task EnableUserAsync_OK()
         {
             var expectedOuput = new UserProfileResponse
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                Username = _fixture.Faker.Person.UserName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                PreferredUsername = _fixture.Faker.Person.UserName,
-            };
+            (
+                username: _fixture.Faker.Person.UserName, 
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,                
+                emailAddress: _fixture.Faker.Person.Email,
+                preferredUsername: _fixture.Faker.Person.UserName
+            );
 
             _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(expectedOuput));
@@ -62,10 +60,10 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
             var app = new App.ChangeStatusUser(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
             
             var output = await app.Handle(new App.ChangeStatusUserInput
-            {
-                Username = expectedOuput.Username,
-                Action = App.ChangeStatusAction.ACTIVATE
-            }, CancellationToken.None);
+            (
+                username: expectedOuput.Username,
+                action: App.ChangeStatusAction.ACTIVATE
+            ), CancellationToken.None);
 
             output.Username.Should().Be(expectedOuput.Username);
         }
@@ -75,13 +73,13 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
         public async Task DisableUserAsync_OK()
         {
             var expectedOuput = new UserProfileResponse
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                Username = _fixture.Faker.Person.UserName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                PreferredUsername = _fixture.Faker.Person.UserName,
-            };
+            (
+                username: _fixture.Faker.Person.UserName,
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,                
+                emailAddress: _fixture.Faker.Person.Email,
+                preferredUsername: _fixture.Faker.Person.UserName
+            );
 
             _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(expectedOuput));
@@ -89,10 +87,10 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
             var app = new App.ChangeStatusUser(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
 
             var output = await app.Handle(new App.ChangeStatusUserInput
-            {
-                Username = expectedOuput.Username,
-                Action = App.ChangeStatusAction.DEACTIVATE
-            }, CancellationToken.None);
+            (
+                username: expectedOuput.Username,
+                action: App.ChangeStatusAction.DEACTIVATE
+            ), CancellationToken.None);
 
             output.Username.Should().Be(expectedOuput.Username);
         }

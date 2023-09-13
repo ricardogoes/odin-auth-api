@@ -22,11 +22,7 @@ namespace Odin.Auth.UnitTests.Application.Logout
         public async Task TryLogOutAsync_Ok()
         {
             var app = new App.Logout(_awsIdentityRepository);
-            var response = await app.Handle(new LogoutInput
-            {
-                Username = "unit.testing",
-                AccessToken = "access-token"
-            }, CancellationToken.None);
+            var response = await app.Handle(new LogoutInput("unit.testing", "access-token"),  CancellationToken.None);
 
             response.Username.Should().Be("unit.testing");
             response.Message.Should().Be("User 'unit.testing' logged out successfully");

@@ -141,7 +141,7 @@ namespace Odin.Auth.Infra.Cognito
                 });
         }
 
-        public async Task<ListUsersResponse> ListUsersAsync(ListUsersRequest request)
+        public async Task<ListUsersResponse?> ListUsersAsync(ListUsersRequest request)
         {
             if (request.Filter.Equals("user.not.confirmed") || request.Filter.Contains("user.not.found"))
                 return null;
