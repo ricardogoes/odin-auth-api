@@ -38,11 +38,7 @@ namespace Odin.Auth.UnitTests.Application.Login
                 }));
             
             var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new App.LoginInput
-            {
-                Username = "unit.testing",
-                Password = "password"
-            }, CancellationToken.None);
+            var response = await app.Handle(new App.LoginInput("unit.testing", "password"), CancellationToken.None); ;
 
             response.Username.Should().Be("unit.testing");
         }
@@ -55,11 +51,7 @@ namespace Odin.Auth.UnitTests.Application.Login
                 .Throws(new NotAuthorizedException("Incorrect username or password")); 
             
             var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput
-            {
-                Username = "user.not.authenticated",
-                Password = "password"
-            }, CancellationToken.None);
+            var response = await app.Handle(new LoginInput("user.not.authenticated", "password"), CancellationToken.None);
 
             response.Username.Should().BeEmpty();
             response.Message.Should().Be("Incorrect username or password");
@@ -73,11 +65,7 @@ namespace Odin.Auth.UnitTests.Application.Login
                 .Throws(new UserNotFoundException("User not found"));
 
             var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput
-            {
-                Username = "user.not.found",
-                Password = "password"
-            }, CancellationToken.None);
+            var response = await app.Handle(new LoginInput("user.not.found", "password"), CancellationToken.None);
 
             response.Username.Should().BeEmpty();
             response.Message.Should().Be("User not found");
@@ -106,14 +94,10 @@ namespace Odin.Auth.UnitTests.Application.Login
                             }
                         }
                     }
-                })); 
+                })!); 
             
             var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput
-            {
-                Username = "user.not.confirmed",
-                Password = "password"
-            }, CancellationToken.None);
+            var response = await app.Handle(new LoginInput("user.not.confirmed", "password"), CancellationToken.None);
 
             response.Username.Should().Be("user.not.confirmed");
             response.Message.Should().Contain("Confirmation Code sent");
@@ -142,14 +126,10 @@ namespace Odin.Auth.UnitTests.Application.Login
                             }
                         }
                     }
-                }));
+                })!);
 
             var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput
-            {
-                Username = "user.not.confirmed.not-sent",
-                Password = "password"
-            }, CancellationToken.None);
+            var response = await app.Handle(new LoginInput("user.not.confirmed.not-sent", "password"),  CancellationToken.None);
 
             response.Username.Should().Be("user.not.confirmed.not-sent");
             response.Message.Should().Contain("Resend Confirmation Code Response");

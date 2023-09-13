@@ -54,7 +54,7 @@ namespace Odin.Auth.Infra.Cognito
         public async Task<InitiateAuthResponse> InitiateAuthAsync(InitiateAuthRequest request)
             => await _awsIdentityProvider.InitiateAuthAsync(request);
 
-        public async Task<ListUsersResponse> ListUsersAsync(ListUsersRequest request)
+        public async Task<ListUsersResponse?> ListUsersAsync(ListUsersRequest request)
             => await _awsIdentityProvider.ListUsersAsync(request);
 
         public async Task<ResendConfirmationCodeResponse> ResendConfirmationCodeAsync(ResendConfirmationCodeRequest request)

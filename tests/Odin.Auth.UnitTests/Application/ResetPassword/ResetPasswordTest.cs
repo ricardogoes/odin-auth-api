@@ -24,12 +24,12 @@ namespace Odin.Auth.UnitTests.Application.ResetPassword
         {
             var app = new App.ResetPassword(_fixture.AppSettings, _awsIdentityRepository);
             var response = await app.Handle(new App.ResetPasswordInput
-            {
-                UserId = "unit.testing",
-                Username = "unit.testing",
-                ConfirmationCode = "OK",
-                NewPassword = "123123"
-            }, CancellationToken.None);
+            (
+                userId: "unit.testing",
+                username: "unit.testing",
+                confirmationCode: "OK",
+                newPassword: "123123"
+            ), CancellationToken.None);
 
             response.Username. Should().Be("unit.testing");
         }
@@ -40,12 +40,12 @@ namespace Odin.Auth.UnitTests.Application.ResetPassword
         {
             var app = new App.ResetPassword(_fixture.AppSettings, _awsIdentityRepository);
             var ex = Assert.Throws<AggregateException>(() => app.Handle(new App.ResetPasswordInput
-            {
-                UserId = "user.with.error",
-                Username = "unit.testing",
-                ConfirmationCode = "OK",
-                NewPassword = "123123"
-            }, CancellationToken.None).Result);
+            (
+                userId: "user.with.error",
+                username: "unit.testing",
+                confirmationCode: "OK",
+                newPassword: "123123"
+            ), CancellationToken.None).Result);
 
             ex.Message.Should().Contain("Can't reset password");
         }

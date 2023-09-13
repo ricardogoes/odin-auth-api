@@ -29,18 +29,12 @@ namespace Odin.Auth.Application.ChangeStatusUser
                 throw;
             }
 
-            ChangeStatusUserOutput output = null;
-
-            switch (input.Action)
+            ChangeStatusUserOutput? output = input.Action switch
             {
-                case ChangeStatusAction.ACTIVATE:
-                    output = await EnableUserAsync(input.Username, cancellationToken);
-                    break;
-                case ChangeStatusAction.DEACTIVATE:
-                    output = await DisableUserAsync(input.Username, cancellationToken);
-                    break;
-            }
-
+                ChangeStatusAction.ACTIVATE => await EnableUserAsync(input.Username, cancellationToken),
+                ChangeStatusAction.DEACTIVATE => await DisableUserAsync(input.Username, cancellationToken),
+                _ => throw new ArgumentException("Invalid Action", nameof(input)),
+            };
             return output;
         }
 
@@ -55,10 +49,7 @@ namespace Odin.Auth.Application.ChangeStatusUser
 
             await _awsIdentityRepository.AdminEnableUserAsync(userAttributesRequest);
 
-            return new ChangeStatusUserOutput
-            {
-                Username = username
-            };
+            return new ChangeStatusUserOutput(username);
         }
 
         private async Task<ChangeStatusUserOutput> DisableUserAsync(string username, CancellationToken cancellationToken)
@@ -71,10 +62,7 @@ namespace Odin.Auth.Application.ChangeStatusUser
 
             await _awsIdentityRepository.AdminDisableUserAsync(userAttributesRequest);
 
-            return new ChangeStatusUserOutput
-            {
-                Username = username
-            };
+            return new ChangeStatusUserOutput(username);
         }
     }
 }

@@ -29,25 +29,25 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         public async Task UpdateUserAttributesAsync_OK()
         {
             var expectedOuput = new UserProfileResponse
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                Username = _fixture.Faker.Person.UserName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                PreferredUsername = _fixture.Faker.Person.UserName,
-            };
+            (
+                username: _fixture.Faker.Person.UserName,
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: _fixture.Faker.Person.Email,
+                preferredUsername: _fixture.Faker.Person.UserName
+            );
 
             _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(expectedOuput));
 
             var app = new App.UpdateProfile(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
             var output = await app.Handle(new App.UpdateProfileInput
-            {
-                Username = expectedOuput.Username,
-                FirstName = expectedOuput.FirstName,
-                LastName = expectedOuput.LastName,
-                EmailAddress = expectedOuput.EmailAddress
-            }, CancellationToken.None);
+            (
+                username: expectedOuput.Username,
+                firstName: expectedOuput.FirstName,
+                lastName: expectedOuput.LastName,
+                emailAddress: expectedOuput.EmailAddress
+            ), CancellationToken.None);
 
             output.Username.Should().Be(expectedOuput.Username);
         }
@@ -62,12 +62,12 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
             var app = new App.UpdateProfile(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
             
             var ex = Assert.Throws<AggregateException>(() => app.Handle(new App.UpdateProfileInput
-            {
-                Username = _fixture.Faker.Person.UserName,
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = _fixture.Faker.Person.Email
-            }, CancellationToken.None).Result);
+            (
+                username: _fixture.Faker.Person.UserName,
+                firstName: _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: _fixture.Faker.Person.Email
+            ), CancellationToken.None).Result);
 
             ex.Message.Should().Contain("User not found");
         }

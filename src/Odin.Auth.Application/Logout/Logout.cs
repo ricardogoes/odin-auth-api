@@ -18,11 +18,7 @@ namespace Odin.Auth.Application.Logout
             var request = new GlobalSignOutRequest { AccessToken = input.AccessToken };
             await _awsIdentityRepository.GlobalSignOutAsync(request);
 
-            return new LogoutOutput
-            {
-                Username = input.Username,
-                Message = $"User '{input.Username}' logged out successfully"
-            };
+            return new LogoutOutput(input.Username, $"User '{input.Username}' logged out successfully");
         }
     }
 }

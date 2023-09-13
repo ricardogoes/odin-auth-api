@@ -18,11 +18,11 @@ namespace Odin.Auth.UnitTests.Application.ChangePassword
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new App.ChangePasswordInput
-            {
-                Username = "",
-                CurrentPassword = "unit.testing",
-                NewPassword = "new.password"
-            };
+            (
+                username: "",
+                currentPassword: "unit.testing",
+                newPassword: "new.password"
+            );
 
             var validator = new App.ChangePasswordInputValidator();
 
@@ -40,11 +40,11 @@ namespace Odin.Auth.UnitTests.Application.ChangePassword
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new App.ChangePasswordInput
-            {
-                Username = "unit.testing",
-                CurrentPassword = "",
-                NewPassword = "new.password"
-            };
+            (
+                username: "unit.testing",
+                currentPassword: "",
+                newPassword: "new.password"
+            );
 
             var validator = new App.ChangePasswordInputValidator();
 
@@ -62,11 +62,11 @@ namespace Odin.Auth.UnitTests.Application.ChangePassword
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new App.ChangePasswordInput
-            {
-                Username = "unit.testing",
-                CurrentPassword = "password",
-                NewPassword = ""
-            };
+            (
+                username: "unit.testing",
+                currentPassword: "password",
+                newPassword: ""
+            );
 
             var validator = new App.ChangePasswordInputValidator();
 

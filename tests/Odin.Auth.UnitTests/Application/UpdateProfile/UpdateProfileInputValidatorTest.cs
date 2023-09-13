@@ -18,12 +18,12 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new UpdateProfileInput
-            {
-                FirstName = "",
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                Username = _fixture.Faker.Person.UserName                
-            };
+            (
+                firstName: "",
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: _fixture.Faker.Person.Email,
+                username: _fixture.Faker.Person.UserName                
+            );
 
             var validator = new UpdateProfileInputValidator();
 
@@ -41,12 +41,12 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new UpdateProfileInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = "",
-                EmailAddress = _fixture.Faker.Person.Email,
-                Username = _fixture.Faker.Person.UserName
-            };
+            (
+                firstName:  _fixture.Faker.Person.FirstName,
+                lastName: "",
+                emailAddress: _fixture.Faker.Person.Email,
+                username: _fixture.Faker.Person.UserName
+            );
 
             var validator = new UpdateProfileInputValidator();
 
@@ -64,12 +64,12 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new UpdateProfileInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = "",
-                Username = _fixture.Faker.Person.UserName
-            };
+            (
+                firstName:  _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: "",
+                username: _fixture.Faker.Person.UserName
+            );
 
             var validator = new UpdateProfileInputValidator();
 
@@ -90,12 +90,12 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new UpdateProfileInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = email,
-                Username = _fixture.Faker.Person.UserName
-            };
+            (
+                firstName:  _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: email,
+                username: _fixture.Faker.Person.UserName
+            );
 
             var validator = new UpdateProfileInputValidator();
 
@@ -113,12 +113,12 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new UpdateProfileInput
-            {
-                FirstName = _fixture.Faker.Person.FirstName,
-                LastName = _fixture.Faker.Person.LastName,
-                EmailAddress = _fixture.Faker.Person.Email,
-                Username = ""
-            };
+            (
+                firstName:  _fixture.Faker.Person.FirstName,
+                lastName: _fixture.Faker.Person.LastName,
+                emailAddress: _fixture.Faker.Person.Email,
+                username: ""
+            );
 
             var validator = new UpdateProfileInputValidator();
 

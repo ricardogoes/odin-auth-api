@@ -18,7 +18,7 @@ namespace Odin.Auth.Infra.Cognito
         Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request);
         Task<ConfirmForgotPasswordResponse> ConfirmForgotPasswordAsync(ConfirmForgotPasswordRequest request);
         Task<InitiateAuthResponse> InitiateAuthAsync(InitiateAuthRequest request);
-        Task<ListUsersResponse> ListUsersAsync(ListUsersRequest request);
+        Task<ListUsersResponse?> ListUsersAsync(ListUsersRequest request);
 
     }
 }

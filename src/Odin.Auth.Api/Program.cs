@@ -22,22 +22,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+var cognitoSettings = new CognitoSettings
+(
+    Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessKeyId"),
+    Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessSecretKey"),
+    Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AppClientId"),
+    Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoAuthorityUrl"),
+    Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoIdpUrl"),
+    Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__Region"),
+    Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__UserPoolId")
+);
 
-var appSettings = new AppSettings
-{
-    AWSCognitoSettings = new CognitoSettings
-    {
-        AccessKeyId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessKeyId"),
-        AccessSecretKey = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessSecretKey"),
-        AppClientId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AppClientId"),
-        CognitoAuthorityUrl = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoAuthorityUrl"),
-        CognitoIdpUrl = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoIdpUrl"),
-        Region = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__Region"),
-        UserPoolId = Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__UserPoolId")
-    }
-};
-
-var cognitoSettings = appSettings.AWSCognitoSettings;
+var appSettings = new AppSettings(cognitoSettings);
 
 // Add services to the container.
 builder.Services.AddSingleton(appSettings);

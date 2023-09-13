@@ -30,10 +30,7 @@ namespace Odin.Auth.Application.ChangePassword
 
             await _awsIdentityRepository.ChangePasswordAsync(changePasswordRequest);
 
-            return new ChangePasswordOutput
-            {
-                Username = request.Username
-            };
+            return new ChangePasswordOutput(request.Username);
         }
     }
 }

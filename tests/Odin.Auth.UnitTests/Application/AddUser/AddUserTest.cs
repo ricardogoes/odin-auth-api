@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Odin.Auth.Infra.Cognito;
-using Xunit.Abstractions;
 using App = Odin.Auth.Application.AddUser;
 
 namespace Odin.Auth.UnitTests.Application.AddUser
@@ -23,13 +22,13 @@ namespace Odin.Auth.UnitTests.Application.AddUser
         {
             var app = new App.AddUser(_fixture.AppSettings, _awsIdentityRepository);
             var output = await app.Handle(new App.AddUserInput
-            {
-                Username = "unit.testing",
-                FirstName = "Unit",
-                LastName = "Testing",
-                EmailAddress = "unit.testing@email.com",
-                Password = "testing123!"
-            }, CancellationToken.None);
+            (
+                username: "unit.testing",
+                firstName: "Unit",
+                lastName: "Testing",
+                emailAddress: "unit.testing@email.com",
+                password: "testing123!"
+            ), CancellationToken.None);
 
             output.Username.Should().Be("unit.testing");
             output.EmailAddress.Should().Be("unit.testing@email.com");

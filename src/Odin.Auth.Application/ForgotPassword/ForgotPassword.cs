@@ -38,41 +38,23 @@ namespace Odin.Auth.Application.ForgotPassword
 
                     if (forgotPasswordResponse.HttpStatusCode == HttpStatusCode.OK)
                     {
-                        return new ForgotPasswordOutput
-                        {
-                            UserId = filtered_user.Username,
-                            Username = request.Username,
-                            Message = $"Confirmation Code sent to {forgotPasswordResponse.CodeDeliveryDetails.Destination} via {forgotPasswordResponse.CodeDeliveryDetails.DeliveryMedium.Value}"
-                        };
+                        return new ForgotPasswordOutput(filtered_user.Username, request.Username,
+                            $"Confirmation Code sent to {forgotPasswordResponse.CodeDeliveryDetails.Destination} via {forgotPasswordResponse.CodeDeliveryDetails.DeliveryMedium.Value}"
+                        );
                     }
                     else
                     {
-                        return new ForgotPasswordOutput
-                        {
-                            UserId = string.Empty,
-                            Username = request.Username,
-                            Message = $"ListUsers Response: {forgotPasswordResponse.HttpStatusCode}",
-                        };
+                        return new ForgotPasswordOutput(request.Username, request.Username, $"ListUsers Response: {forgotPasswordResponse.HttpStatusCode}");
                     }
                 }
                 else
                 {
-                    return new ForgotPasswordOutput
-                    {
-                        UserId = string.Empty,
-                        Username = request.Username,
-                        Message = $"No users with the given username found"
-                    };
+                    return new ForgotPasswordOutput(request.Username, request.Username, $"No users with the given username found");
                 }
             }
             else
             {
-                return new ForgotPasswordOutput
-                {
-                    UserId = string.Empty,
-                    Username = string.Empty,
-                    Message = $"Error trying to recover user data"
-                };
+                return new ForgotPasswordOutput($"Error trying to recover user data");
             }
         }
     }

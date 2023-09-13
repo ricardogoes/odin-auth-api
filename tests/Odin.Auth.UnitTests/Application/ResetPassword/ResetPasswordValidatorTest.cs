@@ -18,12 +18,12 @@ namespace Odin.Auth.UnitTests.Application.ResetPassword
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new App.ResetPasswordInput
-            {
-                UserId = "",
-                Username = _fixture.Faker.Person.UserName,
-                NewPassword = "new.password",
-                ConfirmationCode = "confirmation.code"               
-            };
+            (
+                userId: "",
+                username: _fixture.Faker.Person.UserName,
+                newPassword: "new.password",
+                confirmationCode: "confirmation.code"               
+            );
 
             var validator = new App.ResetPasswordInputValidator();
 
@@ -41,12 +41,12 @@ namespace Odin.Auth.UnitTests.Application.ResetPassword
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new App.ResetPasswordInput
-            {
-                UserId = _fixture.Faker.Person.UserName,
-                Username = "",
-                NewPassword = "new.password",
-                ConfirmationCode = "confirmation.code"
-            };
+            (
+                userId: _fixture.Faker.Person.UserName,
+                username: "",
+                newPassword: "new.password",
+                confirmationCode: "confirmation.code"
+            );
 
             var validator = new App.ResetPasswordInputValidator();
 
@@ -64,12 +64,12 @@ namespace Odin.Auth.UnitTests.Application.ResetPassword
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new App.ResetPasswordInput
-            {
-                UserId = _fixture.Faker.Person.UserName,
-                Username = _fixture.Faker.Person.UserName,
-                NewPassword = "",
-                ConfirmationCode = "confirmation.code"
-            };
+            (
+                userId: _fixture.Faker.Person.UserName,
+                username: _fixture.Faker.Person.UserName,
+                newPassword: "",
+                confirmationCode: "confirmation.code"
+            );
 
             var validator = new App.ResetPasswordInputValidator();
 
@@ -87,12 +87,12 @@ namespace Odin.Auth.UnitTests.Application.ResetPassword
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new App.ResetPasswordInput
-            {
-                UserId = _fixture.Faker.Person.UserName,
-                Username = _fixture.Faker.Person.UserName,
-                NewPassword = "new.password",
-                ConfirmationCode = ""
-            };
+            (
+                userId: _fixture.Faker.Person.UserName,
+                username: _fixture.Faker.Person.UserName,
+                newPassword: "new.password",
+                confirmationCode: ""
+            );  
 
             var validator = new App.ResetPasswordInputValidator();
 
