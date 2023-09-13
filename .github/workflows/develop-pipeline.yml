@@ -47,9 +47,9 @@ jobs:
           New-Item -Path ./.sonar/scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --version 5.13.1 --tool-path ./.sonar/scanner
          
-      #- name: Install dotnet-coverage
-      #  shell: pwsh
-      #  run: dotnet tool install --global dotnet-coverage
+      - name: Install dotnet-coverage
+        shell: pwsh
+        run: dotnet tool install --global dotnet-coverage
 
       - name: Build, test and analyze
         env:
@@ -57,7 +57,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: pwsh
         run: |
-          ./.sonar/scanner/dotnet-sonarscanner begin /k:"ricardogoes_odin-auth-api" /o:"odin-project" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.dotnet.excludeTestProjects=true
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"ricardogoes_odin-auth-api" /o:"odin-project" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.dotnet.excludeTestProjects=true /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
           dotnet build --configuration Release --no-incremental
-          dotnet test tests/Odin.Auth.UnitTests/Odin.Auth.UnitTests.csproj --no-restore --collect "Code Coverage"
+          dotnet-coverage collect "dotnet test tests/Odin.Auth.UnitTests/Odin.Auth.UnitTests.csproj --no-restore" -f xml -o "coverage.xml"
           ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
