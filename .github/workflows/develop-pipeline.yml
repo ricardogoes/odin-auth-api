@@ -57,7 +57,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: pwsh
         run: |
-          ./.sonar/scanner/dotnet-sonarscanner begin /k:"ricardogoes_odin-auth-api" /o:"odin-project" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml"
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"ricardogoes_odin-auth-api" /o:"odin-project" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.dotnet.excludeTestProjects=true
           dotnet build --configuration Release --no-incremental
           dotnet test tests/Odin.Auth.UnitTests/Odin.Auth.UnitTests.csproj --no-restore --collect "Code Coverage"
           ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
