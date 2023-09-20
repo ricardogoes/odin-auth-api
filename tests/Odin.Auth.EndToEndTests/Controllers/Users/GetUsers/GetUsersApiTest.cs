@@ -71,8 +71,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
         [Theory(DisplayName = "Should return paginated data")]
         [Trait("E2E/Controllers", "Users / [v1]GetUsers")]
         [InlineData(1, 5, 5)]
-        [InlineData(2, 5, 0)]
-        [InlineData(2, 5, 0)]
+        [InlineData(2, 5, 0)]        
         [InlineData(3, 5, 0)]
         public async Task ListPaginated(int page, int pageSize, int expectedItems)
         {

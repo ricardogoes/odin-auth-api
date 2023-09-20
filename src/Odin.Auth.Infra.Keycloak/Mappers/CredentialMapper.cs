@@ -27,7 +27,7 @@ namespace Odin.Auth.Infra.Keycloak.Mappers
             );
         }
 
-        public static List<UserCredential> ToCredentialRepresentation(this List<CredentialRepresentation> credentials)
+        public static List<UserCredential> ToUserCredential(this List<CredentialRepresentation> credentials)
             => credentials.Select(ToUserCredential).ToList();
     }
 }

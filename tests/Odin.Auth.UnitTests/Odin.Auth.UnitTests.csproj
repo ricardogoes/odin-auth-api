@@ -58,4 +58,8 @@
     <ProjectReference Include="..\..\src\Odin.Auth.Infra.Keycloak\Odin.Auth.Infra.Keycloak.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Keycloak\Repositories\" />
+  </ItemGroup>
+
 </Project>

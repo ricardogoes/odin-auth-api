@@ -203,35 +203,6 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
             return userRepresentation.ToUser(userGroups.ToList());
         }
 
-        public async Task<IEnumerable<UserGroup>> FindGroupsByUserIdAsync(Guid userId, CancellationToken cancellationToken)
-        {
-            var client = _httpClientFactory.CreateClient("Keycloak");
-
-            var adminUrl = _keycloakOptions.KeycloakUrlRealm.Replace("/realms", "/admin/realms");
-
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                $"{adminUrl}/users/{userId}/groups");
-
-            var response = await client.SendAsync(request, cancellationToken);
-
-            var outputString = await response.Content.ReadAsStringAsync(cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = JsonSerializer.Deserialize<KeycloakResponseError>(outputString, _snakeCaseSerializeOptions)!;
-
-                var message = errorContent.Error;
-                if (!string.IsNullOrWhiteSpace(errorContent.ErrorDescription))
-                    message += $". ERROR DETAIL: {errorContent.ErrorDescription}";
-
-                throw new KeycloakException(message);
-                
-            }
-
-            return JsonSerializer.Deserialize<IEnumerable<UserGroup>>(outputString, _camelCaseSerializeOptions)!;
-        }
-
         public async Task<IEnumerable<User>> FindUsersAsync(CancellationToken cancellationToken)
         {
             var countUsers = await GetUsersCountAsync(cancellationToken);
@@ -258,8 +229,46 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
 
                 throw new KeycloakException(message);
             }
+            
+            var usersRepresentation = JsonSerializer.Deserialize<List<UserRepresentation>>(outputString, _camelCaseSerializeOptions)!;
+            var dicUsersGroups = new Dictionary<Guid, List<UserGroup>>();
 
-            return JsonSerializer.Deserialize<IEnumerable<User>>(outputString, _camelCaseSerializeOptions)!;
+            foreach (var userRepresentation in usersRepresentation) 
+            {
+                var userGroups = await FindGroupsByUserIdAsync(userRepresentation.Id!.Value, cancellationToken);
+                dicUsersGroups.Add(userRepresentation.Id!.Value, userGroups.ToList());
+            }
+
+            return usersRepresentation.ToUser(dicUsersGroups);
+        }
+
+        public async Task<IEnumerable<UserGroup>> FindGroupsByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var client = _httpClientFactory.CreateClient("Keycloak");
+
+            var adminUrl = _keycloakOptions.KeycloakUrlRealm.Replace("/realms", "/admin/realms");
+
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"{adminUrl}/users/{userId}/groups");
+
+            var response = await client.SendAsync(request, cancellationToken);
+
+            var outputString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = JsonSerializer.Deserialize<KeycloakResponseError>(outputString, _snakeCaseSerializeOptions)!;
+
+                var message = errorContent.Error;
+                if (!string.IsNullOrWhiteSpace(errorContent.ErrorDescription))
+                    message += $". ERROR DETAIL: {errorContent.ErrorDescription}";
+
+                throw new KeycloakException(message);
+
+            }
+
+            return JsonSerializer.Deserialize<IEnumerable<UserGroup>>(outputString, _camelCaseSerializeOptions)!;
         }
 
         private async Task<int> GetUsersCountAsync(CancellationToken cancellationToken)

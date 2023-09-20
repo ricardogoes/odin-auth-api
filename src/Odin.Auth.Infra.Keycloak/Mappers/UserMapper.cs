@@ -30,6 +30,9 @@ namespace Odin.Auth.Infra.Keycloak.Mappers
             };
         }
 
+        public static IEnumerable<UserRepresentation> ToUserRepresentation(this List<User> users)
+            => users.Select(ToUserRepresentation);
+
         public static User ToUser(this UserRepresentation userRepresentation, List<UserGroup>? userGroups = null)
         {
             var user = new User
@@ -58,5 +61,24 @@ namespace Odin.Auth.Infra.Keycloak.Mappers
 
             return user;
         }
+
+        public static IEnumerable<User> ToUser(this List<UserRepresentation> usersRepresentation, Dictionary<Guid, List<UserGroup>>? groups = null)
+        {
+            List<User> users = new();
+            foreach (var user in usersRepresentation)
+            {
+                if (groups is not null)
+                {
+                    var group = groups[user.Id!.Value]!;
+                    users.Add(ToUser(user, group));
+                }
+                else
+                {
+                    users.Add(ToUser(user));
+                }
+            }
+
+            return users;
+        }            
     }
 }
