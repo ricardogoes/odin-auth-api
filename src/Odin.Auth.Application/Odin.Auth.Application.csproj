@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -7,18 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="2.5.0" />
-    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.201.1" />
-    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.7" />
-    <PackageReference Include="FluentValidation" Version="11.7.1" />
     <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+	<PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Odin.Auth.Infra.Cognito\Odin.Auth.Infra.Cognito.csproj" />
+    <ProjectReference Include="..\Odin.Auth.Domain\Odin.Auth.Domain.csproj" />
   </ItemGroup>
 
 </Project>

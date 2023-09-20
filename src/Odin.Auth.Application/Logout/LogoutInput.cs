@@ -2,15 +2,13 @@
 
 namespace Odin.Auth.Application.Logout
 {
-    public class LogoutInput : IRequest<LogoutOutput>
-    {        
-        public string Username { get; private set; }
-        public string AccessToken { get; private set; }
-                
-        public LogoutInput(string username, string accessToken)
+    public class LogoutInput : IRequest
+    {
+        public Guid UserId { get; set; }
+
+        public LogoutInput(Guid userId)
         {
-            Username = username;
-            AccessToken = accessToken;
+            UserId = userId;
         }
     }
 }

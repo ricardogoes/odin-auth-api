@@ -1,10 +1,13 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
-using FluentAssertions;
+﻿using FluentAssertions;
+using FluentValidation;
+using FluentValidation.Results;
 using Moq;
-using Odin.Auth.Application.Common;
+using Odin.Auth.Application.GetUsers;
 using Odin.Auth.Application.Login;
-using Odin.Auth.Infra.Cognito;
-using Xunit.Abstractions;
+using Odin.Auth.Domain.Exceptions;
+using Odin.Auth.Domain.Interfaces;
+using Odin.Auth.Domain.Models;
+using Odin.Auth.Infra.Keycloak.Exceptions;
 using App = Odin.Auth.Application.Login;
 
 namespace Odin.Auth.UnitTests.Application.Login
@@ -13,126 +16,81 @@ namespace Odin.Auth.UnitTests.Application.Login
     public class LoginTest
     {
         private readonly LoginTestFixture _fixture;
-        private readonly AmazonCognitoIdentityRepositoryMock _awsIdentityRepository;
-        private readonly Mock<ICommonService> _commonServiceMock;
+
+        private readonly Mock<IValidator<LoginInput>> _validatorMock;
+        private readonly Mock<IKeycloakRepository> _keycloakRepositoryMock;
 
         public LoginTest(LoginTestFixture fixture)
         {
             _fixture = fixture;
-            _awsIdentityRepository = _fixture.GetAwsIdentityRepository();
-            _commonServiceMock = new();
+
+            _validatorMock = new();
+            _keycloakRepositoryMock = _fixture.GetKeycloakRepositoryMock();
         }
 
-        [Fact(DisplayName = "Handle() should return OK with valid data")]
+        [Fact(DisplayName = "Handle() should login with valid data")]
         [Trait("Application", "Login / Login")]
-        public async Task TryLoginAsync_Ok()
+        public async void Login()
         {
-            _commonServiceMock.Setup(s => s.AuthenticateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(new AuthenticationResultType
-                {
-                    AccessToken = "access-token",
-                    ExpiresIn = 3600,
-                    IdToken = "id-token",
-                    RefreshToken = "refresh-token",
-                    TokenType = "Bearer"
-                }));
-            
-            var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new App.LoginInput("unit.testing", "password"), CancellationToken.None); ;
+            var input = _fixture.GetValidLoginInput();
 
-            response.Username.Should().Be("unit.testing");
+            var expectedOutput = new KeycloakAuthResponse("access-token", "id-token", "refresh-token", 3600);
+
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<LoginInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult()));
+
+            _keycloakRepositoryMock.Setup(s => s.AuthAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(expectedOutput));
+
+            var useCase = new App.Login(_validatorMock.Object, _keycloakRepositoryMock.Object);
+            var output = await useCase.Handle(input, CancellationToken.None);
+
+            output.Should().NotBeNull();
+            output.AccessToken.Should().Be(expectedOutput.AccessToken);
+            output.IdToken.Should().Be(expectedOutput.IdToken);
+            output.RefreshToken.Should().Be(expectedOutput.RefreshToken);
+            output.ExpiresIn.Should().Be(expectedOutput.ExpiresIn);
         }
 
-        [Fact(DisplayName = "Handle() should return not authenticated when invalid user or password")]
+        [Fact(DisplayName = "Handle() should throw an error when validation failed")]
         [Trait("Application", "Login / Login")]
-        public async Task TryLoginAsync_UserNotAuthenticated()
+        public async void Login_ValidationFailed()
         {
-            _commonServiceMock.Setup(s => s.AuthenticateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new NotAuthorizedException("Incorrect username or password")); 
-            
-            var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput("user.not.authenticated", "password"), CancellationToken.None);
+            var input = new LoginInput("admin", "admin");
 
-            response.Username.Should().BeEmpty();
-            response.Message.Should().Be("Incorrect username or password");
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<LoginInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult(new List<ValidationFailure> { new ValidationFailure("Property", "'Property' must not be empty") })));
+
+            var useCase = new App.Login(_validatorMock.Object, _keycloakRepositoryMock.Object);
+
+            var task = async () => await useCase.Handle(input, CancellationToken.None);
+
+            await task.Should().ThrowAsync<EntityValidationException>();
         }
 
-        [Fact(DisplayName = "Handle() should return not found when user not found")]
+        [Theory(DisplayName = "Handle() should throw an error when data is invalid")]
         [Trait("Application", "Login / Login")]
-        public async Task TryLoginAsync_UserNotFound()
+        [MemberData(
+            nameof(LoginTestDataGenerator.GetInvalidInputs),
+            parameters: 12,
+            MemberType = typeof(LoginTestDataGenerator)
+        )]
+        public async void ThrowWhenCantInstantiateUser(
+            App.LoginInput input
+        )
         {
-            _commonServiceMock.Setup(s => s.AuthenticateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new UserNotFoundException("User not found"));
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<LoginInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult()));
 
-            var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput("user.not.found", "password"), CancellationToken.None);
+            _keycloakRepositoryMock.Setup(s => s.AuthAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+               .Throws(new KeycloakException("Error"));
 
-            response.Username.Should().BeEmpty();
-            response.Message.Should().Be("User not found");
-        }
+            var useCase = new App.Login(_validatorMock.Object, _keycloakRepositoryMock.Object);
 
-        [Fact(DisplayName = "Handle() should resend confirmation code when user not confirmed")]
-        [Trait("Application", "Login / Login")]
-        public async Task TryLoginAsync_ResendConfirmationCode()
-        {
-            _commonServiceMock.Setup(s => s.AuthenticateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new UserNotConfirmedException(""));
+            Func<Task> task = async () => await useCase.Handle(input, CancellationToken.None);
 
-            _commonServiceMock.Setup(s => s.FindUsersByEmailAddressAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(new ListUsersResponse
-                {
-                    HttpStatusCode = System.Net.HttpStatusCode.OK,
-                    Users = new List<UserType>
-                    {
-                        new UserType
-                        {
-                            Username = "user.not.confirmed",
-                            Attributes = new List<AttributeType>
-                            {
-                                new AttributeType {Name = "preferred_username", Value = "user.not.confirmed"},
-                                new AttributeType {Name = "email", Value = "user.not.confirmed@email.com"}
-                            }
-                        }
-                    }
-                })!); 
-            
-            var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput("user.not.confirmed", "password"), CancellationToken.None);
-
-            response.Username.Should().Be("user.not.confirmed");
-            response.Message.Should().Contain("Confirmation Code sent");
-        }
-
-        [Fact(DisplayName = "Handle() should not resend confirmation code when an error ocurred")]
-        [Trait("Application", "Login / Login")]
-        public async Task TryLoginAsync_NotResendConfirmationCodeWhenError()
-        {
-            _commonServiceMock.Setup(s => s.AuthenticateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new UserNotConfirmedException(""));
-
-            _commonServiceMock.Setup(s => s.FindUsersByEmailAddressAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(new ListUsersResponse
-                {
-                    HttpStatusCode = System.Net.HttpStatusCode.OK,
-                    Users = new List<UserType>
-                    {
-                        new UserType
-                        {
-                            Username = "user.not.confirmed.not-sent",
-                            Attributes = new List<AttributeType>
-                            {
-                                new AttributeType {Name = "preferred_username", Value = "user.not.confirmed.not-sent"},
-                                new AttributeType {Name = "email", Value = "user.not.confirmed.not-sent@email.com"}
-                            }
-                        }
-                    }
-                })!);
-
-            var app = new App.Login(_fixture.AppSettings, _commonServiceMock.Object, _awsIdentityRepository);
-            var response = await app.Handle(new LoginInput("user.not.confirmed.not-sent", "password"),  CancellationToken.None);
-
-            response.Username.Should().Be("user.not.confirmed.not-sent");
-            response.Message.Should().Contain("Resend Confirmation Code Response");
+            await task.Should()
+                .ThrowAsync<KeycloakException>();
         }
     }
 }

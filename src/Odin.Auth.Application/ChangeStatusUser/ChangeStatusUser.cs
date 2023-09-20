@@ -1,68 +1,48 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
+﻿using FluentValidation;
 using MediatR;
-using Odin.Auth.Application.Common;
-using Odin.Auth.Infra.Cognito;
+using Odin.Auth.Domain.Exceptions;
+using Odin.Auth.Domain.Interfaces;
+using Odin.Auth.Domain.Models;
 
 namespace Odin.Auth.Application.ChangeStatusUser
 {
-    public class ChangeStatusUser : IRequestHandler<ChangeStatusUserInput, ChangeStatusUserOutput>
+    public class ChangeStatusUser : IRequestHandler<ChangeStatusUserInput, UserOutput>
     {
-        private readonly AppSettings _appSettings;
-        private readonly IAmazonCognitoIdentityRepository _awsIdentityRepository;
-        private readonly ICommonService _commonService;
+        private readonly IValidator<ChangeStatusUserInput> _validator;
+        private readonly IKeycloakRepository _keycloakRepository;
 
-        public ChangeStatusUser(AppSettings appSettings, IAmazonCognitoIdentityRepository awsIdentityRepository, ICommonService commonService)
+        public ChangeStatusUser(IValidator<ChangeStatusUserInput> validator, IKeycloakRepository keycloakRepository)
         {
-            _appSettings = appSettings;
-            _commonService = commonService;
-            _awsIdentityRepository = awsIdentityRepository;
+            _validator = validator;
+            _keycloakRepository = keycloakRepository;
         }
 
-        public async Task<ChangeStatusUserOutput> Handle(ChangeStatusUserInput input, CancellationToken cancellationToken)
+        public async Task<UserOutput> Handle(ChangeStatusUserInput input, CancellationToken cancellationToken)
         {
-            try
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (!validationResult.IsValid)
             {
-                await _commonService.GetUserByUsernameAsync(input.Username, cancellationToken);
+                throw new EntityValidationException($"One or more validation errors occurred on type {nameof(input)}.", validationResult.ToDictionary());
             }
-            catch (UserNotFoundException)
+            
+            var user = await _keycloakRepository.FindByIdAsync(input.UserId, cancellationToken);
+
+            switch (input.Action)
             {
-                throw;
+                case ChangeStatusAction.ACTIVATE:
+                    user.Activate();
+                    break;
+                case ChangeStatusAction.DEACTIVATE:
+                    user.Deactivate();
+                    break;
             }
+                        
+            user.AddAttribute(new KeyValuePair<string, string>("last_updated_at", DateTime.Now.ToString("o")));
+            user.AddAttribute(new KeyValuePair<string, string>("last_updated_by", input.LoggedUsername));
 
-            ChangeStatusUserOutput? output = input.Action switch
-            {
-                ChangeStatusAction.ACTIVATE => await EnableUserAsync(input.Username, cancellationToken),
-                ChangeStatusAction.DEACTIVATE => await DisableUserAsync(input.Username, cancellationToken),
-                _ => throw new ArgumentException("Invalid Action", nameof(input)),
-            };
-            return output;
-        }
+            await _keycloakRepository.UpdateUserAsync(user, cancellationToken);
 
-        private async Task<ChangeStatusUserOutput> EnableUserAsync(string username, CancellationToken cancellationToken)
-        {            
-
-            var userAttributesRequest = new AdminEnableUserRequest
-            {
-                UserPoolId = _appSettings.AWSCognitoSettings.UserPoolId,
-                Username = username
-            };
-
-            await _awsIdentityRepository.AdminEnableUserAsync(userAttributesRequest);
-
-            return new ChangeStatusUserOutput(username);
-        }
-
-        private async Task<ChangeStatusUserOutput> DisableUserAsync(string username, CancellationToken cancellationToken)
-        { 
-            var userAttributesRequest = new AdminDisableUserRequest
-            {
-                UserPoolId = _appSettings.AWSCognitoSettings.UserPoolId,
-                Username = username
-            };
-
-            await _awsIdentityRepository.AdminDisableUserAsync(userAttributesRequest);
-
-            return new ChangeStatusUserOutput(username);
+            return UserOutput.FromUser(user);
         }
     }
 }

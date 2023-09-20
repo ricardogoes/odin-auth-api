@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Infra.Cognito;
+﻿using Odin.Auth.Application.Logout;
 
 namespace Odin.Auth.UnitTests.Application.Logout
 {
@@ -9,10 +9,16 @@ namespace Odin.Auth.UnitTests.Application.Logout
     public class LogoutTestFixture : BaseFixture
     {
         public LogoutTestFixture()
-            : base()
-        { }
+            : base() { }
 
-        public AmazonCognitoIdentityRepositoryMock GetAwsIdentityRepository()
-            => new();
+        public LogoutInput GetValidLogoutInput(Guid? id = null)
+        {
+            return new LogoutInput(id ?? Guid.NewGuid());
+        }
+
+        public LogoutInput GetInputWithEmptyUserId()
+        {
+            return new LogoutInput(Guid.Empty);
+        }
     }
 }

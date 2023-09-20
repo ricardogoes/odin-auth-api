@@ -14,7 +14,7 @@ namespace Odin.Auth.UnitTests.Application.Login
 
         [Fact(DisplayName = "Validate() should not validate when username is empty")]
         [Trait("Application", "Login / LoginInputValidator")]
-        public void DontValidateWhenEmptyFirstName()
+        public void DontValidateWhenEmptyUsername()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new LoginInput("", "unit.testing");
@@ -31,7 +31,7 @@ namespace Odin.Auth.UnitTests.Application.Login
 
         [Fact(DisplayName = "Validate() should not validate when password is empty")]
         [Trait("Application", "Login / LoginInputValidator")]
-        public void DontValidateWhenEmptyLastName()
+        public void DontValidateWhenEmptyPassword()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new LoginInput(_fixture.Faker.Person.UserName, "");

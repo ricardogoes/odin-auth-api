@@ -1,30 +1,34 @@
 ﻿using Bogus;
-using Odin.Auth.Application.Common;
-using Odin.Auth.Infra.Cognito.Models;
+using Moq;
+using Odin.Auth.Domain.Entities;
+using Odin.Auth.Domain.Interfaces;
+using Odin.Auth.Domain.ValuesObjects;
 
 namespace Odin.Auth.UnitTests
 {
     public abstract class BaseFixture
     {
-        public AppSettings AppSettings { get; set; }
         public Faker Faker { get; set; }
 
-        public BaseFixture()
+        protected BaseFixture()
+            => Faker = new Faker("pt_BR");
+
+        public Mock<IKeycloakRepository> GetKeycloakRepositoryMock()
+            => new();
+
+        public User GetValidUser()
         {
-            var cognitoSettings = new CognitoSettings
+            var user = new User
             (
-                Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessKeyId"),
-                Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AccessSecretKey"),
-                Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__AppClientId"),
-                Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoAuthorityUrl"),
-                Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__CognitoIdpUrl"),
-                Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__Region"),
-                Environment.GetEnvironmentVariable("OdinSettings__AWSCognitoSettings__UserPoolId")
+                Faker.Person.UserName,
+                Faker.Person.FirstName,
+                Faker.Person.LastName,
+                Faker.Person.Email
             );
 
-            AppSettings = new AppSettings(cognitoSettings);
+            user.AddGroup(new UserGroup(Guid.NewGuid(), "odin-group", "/odin-group"));
 
-            Faker = new Faker("pt_BR");
+            return user;
         }
     }
 }

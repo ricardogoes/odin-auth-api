@@ -6,8 +6,7 @@ namespace Odin.Auth.Application.Logout
     {
         public LogoutInputValidator()
         {
-            RuleFor(x => x.Username).NotEmpty();
-            RuleFor(x => x.AccessToken).NotEmpty();
+            RuleFor(x => x.UserId).NotEmpty();
         }
     }
 }

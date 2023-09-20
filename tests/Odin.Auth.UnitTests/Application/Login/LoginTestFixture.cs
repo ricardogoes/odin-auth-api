@@ -1,4 +1,5 @@
-﻿using Odin.Auth.Infra.Cognito;
+﻿using Bogus;
+using Odin.Auth.Application.Login;
 
 namespace Odin.Auth.UnitTests.Application.Login
 {
@@ -9,10 +10,33 @@ namespace Odin.Auth.UnitTests.Application.Login
     public class LoginTestFixture : BaseFixture
     {
         public LoginTestFixture()
-            : base()
-        { }
+            : base() { }
 
-        public AmazonCognitoIdentityRepositoryMock GetAwsIdentityRepository()
-            => new();
+        public LoginInput GetValidLoginInput()
+        {
+            return new LoginInput
+            (
+                username: Faker.Person.UserName,
+                password: "password"
+            );
+        }
+
+        public LoginInput GetInputWithEmptyUsername()
+        {
+            return new LoginInput
+            (
+                username: "",
+                password: "password"
+            );
+        }
+
+        public LoginInput GetInputWithEmptyPassword()
+        {
+            return new LoginInput
+            (
+                username: Faker.Person.UserName,
+                password: ""
+            );
+        }
     }
 }

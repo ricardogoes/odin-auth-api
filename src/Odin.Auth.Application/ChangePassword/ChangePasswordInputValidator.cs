@@ -6,8 +6,7 @@ namespace Odin.Auth.Application.ChangePassword
     {
         public ChangePasswordInputValidator()
         {
-            RuleFor(x => x.Username).NotEmpty();
-            RuleFor(x => x.CurrentPassword).NotEmpty();
+            RuleFor(x => x.UserId).NotEmpty();
             RuleFor(x => x.NewPassword).NotEmpty();
         }
     }

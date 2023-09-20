@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Infra.Cognito;
+﻿using Odin.Auth.Application.ChangeStatusUser;
 
 namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
 {
@@ -9,10 +9,30 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
     public class ChangeStatusUserTestFixture : BaseFixture
     {
         public ChangeStatusUserTestFixture()
-            : base()
-        { }
+            : base() { }
 
-        public AmazonCognitoIdentityRepositoryMock GetAwsIdentityRepository()
-            => new();
+        public ChangeStatusUserInput GetValidChangeStatusUserInputToActivate(Guid? id = null)
+            => new
+            (
+                id ?? Guid.NewGuid(),
+                ChangeStatusAction.ACTIVATE,
+                loggedUsername: "admin"
+            );
+
+        public ChangeStatusUserInput GetValidChangeStatusUserInputToDeactivate(Guid? id = null)
+            => new
+            (
+                id ?? Guid.NewGuid(),
+                ChangeStatusAction.DEACTIVATE,
+                loggedUsername: "admin"
+            );
+
+        public ChangeStatusUserInput GetChangeStatusUserInputWithEmptyAction(Guid? id = null)
+          => new
+          (
+              id ?? Guid.NewGuid(),
+              null,
+              loggedUsername: "admin"
+          );
     }
 }

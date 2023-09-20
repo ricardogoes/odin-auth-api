@@ -1,20 +1,26 @@
 ﻿using MediatR;
+using Odin.Auth.Domain.Models;
 
 namespace Odin.Auth.Application.UpdateProfile
 {
-    public class UpdateProfileInput : IRequest<UpdateProfileOutput>
+    public class UpdateProfileInput : IRequest<UserOutput>
     {
-        public string Username { get; private set; }
+        public Guid UserId { get; private set; }
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
-        public string EmailAddress { get; private set; }
+        public string Email { get; private set; }
+        public List<string> Groups { get; private set; }
 
-        public UpdateProfileInput(string username, string firstName, string lastName, string emailAddress)
+        public string LoggedUsername { get; private set; }
+
+        public UpdateProfileInput(Guid userId, string firstName, string lastName, string email, List<string> groups, string loggedUsername)
         {
-            Username = username;
+            UserId = userId;
             FirstName = firstName;
             LastName = lastName;
-            EmailAddress = emailAddress;
+            Email = email;
+            Groups = groups;
+            LoggedUsername = loggedUsername;
         }
     }
 }
