@@ -17,13 +17,7 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         public void DontValidateWhenEmptyFirstName()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new UpdateProfileInput
-            (
-                firstName: "",
-                lastName: _fixture.Faker.Person.LastName,
-                emailAddress: _fixture.Faker.Person.Email,
-                username: _fixture.Faker.Person.UserName                
-            );
+            var input = _fixture.GetInputWithEmptyFirstName();
 
             var validator = new UpdateProfileInputValidator();
 
@@ -40,13 +34,7 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         public void DontValidateWhenEmptyLastName()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new UpdateProfileInput
-            (
-                firstName:  _fixture.Faker.Person.FirstName,
-                lastName: "",
-                emailAddress: _fixture.Faker.Person.Email,
-                username: _fixture.Faker.Person.UserName
-            );
+            var input = _fixture.GetInputWithEmptyLastName();
 
             var validator = new UpdateProfileInputValidator();
 
@@ -63,13 +51,7 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
         public void DontValidateWhenEmptyEmailAddress()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new UpdateProfileInput
-            (
-                firstName:  _fixture.Faker.Person.FirstName,
-                lastName: _fixture.Faker.Person.LastName,
-                emailAddress: "",
-                username: _fixture.Faker.Person.UserName
-            );
+            var input = _fixture.GetInputWithEmptyEmail();
 
             var validator = new UpdateProfileInputValidator();
 
@@ -77,9 +59,8 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
 
             validateResult.Should().NotBeNull();
             validateResult.IsValid.Should().BeFalse();
-            validateResult.Errors.Should().HaveCount(2);
-            validateResult.Errors[0].ErrorMessage.Should().Be("'Email Address' must not be empty.");
-            validateResult.Errors[1].ErrorMessage.Should().Be("'Email Address' is not a valid email address.");
+            validateResult.Errors.Should().HaveCount(1);            
+            validateResult.Errors[0].ErrorMessage.Should().Be("'Email' is not a valid email address.");
         }
 
         [Theory(DisplayName = "Validate() should not validate when email address is invalid")]
@@ -91,10 +72,12 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new UpdateProfileInput
             (
-                firstName:  _fixture.Faker.Person.FirstName,
+                userId: Guid.NewGuid(),
+                firstName: _fixture.Faker.Person.FirstName,
                 lastName: _fixture.Faker.Person.LastName,
-                emailAddress: email,
-                username: _fixture.Faker.Person.UserName
+                email: email,
+                groups: new List<string> { "role-01" },
+                loggedUsername: "admin"
             );
 
             var validator = new UpdateProfileInputValidator();
@@ -104,20 +87,22 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
             validateResult.Should().NotBeNull();
             validateResult.IsValid.Should().BeFalse();
             validateResult.Errors.Should().HaveCount(1);
-            validateResult.Errors[0].ErrorMessage.Should().Be("'Email Address' is not a valid email address.");
+            validateResult.Errors[0].ErrorMessage.Should().Be("'Email' is not a valid email address.");
         }
 
-        [Fact(DisplayName = "Validate() should not validate when username is empty")]
+        [Fact(DisplayName = "Validate() should not validate when userId is empty")]
         [Trait("Application", "UpdateProfile / UpdateProfileInputValidator")]
-        public void DontValidateWhenEmptyUsername()
+        public void DontValidateWhenEmptyUserId()
         {
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new UpdateProfileInput
             (
-                firstName:  _fixture.Faker.Person.FirstName,
+                userId: Guid.Empty,
+                firstName: _fixture.Faker.Person.FirstName,
                 lastName: _fixture.Faker.Person.LastName,
-                emailAddress: _fixture.Faker.Person.Email,
-                username: ""
+                email: _fixture.Faker.Person.Email,
+                groups: new List<string> { "role-01" },
+                loggedUsername: "admin"
             );
 
             var validator = new UpdateProfileInputValidator();
@@ -127,7 +112,7 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
             validateResult.Should().NotBeNull();
             validateResult.IsValid.Should().BeFalse();
             validateResult.Errors.Should().HaveCount(1);
-            validateResult.Errors[0].ErrorMessage.Should().Be("'Username' must not be empty.");
+            validateResult.Errors[0].ErrorMessage.Should().Be("'User Id' must not be empty.");
         }
     }
 }

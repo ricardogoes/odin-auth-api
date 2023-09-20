@@ -1,16 +1,19 @@
 ﻿using MediatR;
+using Odin.Auth.Domain.Models;
 
 namespace Odin.Auth.Application.ChangeStatusUser
 {
-    public class ChangeStatusUserInput : IRequest<ChangeStatusUserOutput>
+    public class ChangeStatusUserInput : IRequest<UserOutput>
     {
-        public string Username { get; private set; }
+        public Guid UserId { get; private set; }
         public ChangeStatusAction? Action { get; private set; }
+        public string LoggedUsername { get; private set; }
 
-        public ChangeStatusUserInput(string username, ChangeStatusAction? action)
+        public ChangeStatusUserInput(Guid id, ChangeStatusAction? action, string loggedUsername)
         {
-            Username = username;
+            UserId = id;
             Action = action;
+            LoggedUsername = loggedUsername;
         }
     }
 

@@ -1,6 +1,7 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Odin.Auth.Domain.Exceptions;
+using Odin.Auth.Infra.Keycloak.Exceptions;
 
 namespace Odin.Auth.Api.Filters
 {
@@ -21,20 +22,36 @@ namespace Odin.Auth.Api.Filters
             if (_environment.IsDevelopment())
                 details.Extensions.Add("StackTrace", exception.StackTrace);
 
-            if (exception is UserNotFoundException)
+            if (exception is EntityValidationException)
+            {
+                details.Title = "Unprocessable entity";
+                details.Status = StatusCodes.Status422UnprocessableEntity;
+                details.Type = "UnprocessableEntity";
+                details.Detail = exception.Message;
+
+                details.Extensions["errors"] = (exception as EntityValidationException)?.Errors;
+            }
+            else if (exception is NotFoundException)
             {
                 details.Title = "Not found";
                 details.Status = StatusCodes.Status404NotFound;
                 details.Type = "NotFound";
                 details.Detail = exception.Message;
             }
-            /*else if (exception is RelatedAggregateException)
+            else if (exception is BadRequestException)
             {
-                details.Title = "Invalid Related Aggregate";
-                details.Status = StatusCodes.Status422UnprocessableEntity;
-                details.Type = "RelatedAggregate";
+                details.Title = "Bad request";
+                details.Status = StatusCodes.Status400BadRequest;
+                details.Type = "BadRequest";
                 details.Detail = exception!.Message;
-            }*/
+            }
+            else if (exception is KeycloakException)
+            {
+                details.Title = "Invalid Authentication";
+                details.Status = StatusCodes.Status401Unauthorized;
+                details.Type = "InvalidAuth";
+                details.Detail = exception!.Message;
+            }
             else
             {
                 details.Title = "An unexpected error ocurred";

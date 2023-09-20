@@ -1,0 +1,46 @@
+version: '3.4'
+
+services:
+  odin.keycloak.db:
+    container_name: odin_keycloak_db_e2e
+    hostname: odin_keycloak_db_e2e
+    image: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: tIiefwntHebhEXI78twf
+    command: postgres -c 'max_connections=200' && postgres -c 'shared_buffers=24MB' 
+    volumes:      
+      - ./.docker/db/create-databases.sql:/docker-entrypoint-initdb.d/create-databases.sql
+    networks: [default]
+    ports:
+      - 5432:5432    
+    healthcheck:
+      test: "exit 0"
+
+  odin.keycloak:
+    container_name: odin_keycloak_e2e
+    hostname: odin_keycloak_e2e
+    image: quay.io/keycloak/keycloak:22.0    
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: odin_keycloak_db_e2e
+      KC_DB_URL_DATABASE: odin_keycloak
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: tIiefwntHebhEXI78twf
+      KC_DB_SCHEMA: public
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin     
+    volumes:
+      - .docker/keycloak:/opt/keycloak/data/import
+    networks: [default]
+    ports:
+      - 8444:8080
+    command:
+      - start-dev --import-realm
+    depends_on:
+      odin.keycloak.db:
+        condition: service_healthy
+
+networks:
+  default:
+    name: odin.network

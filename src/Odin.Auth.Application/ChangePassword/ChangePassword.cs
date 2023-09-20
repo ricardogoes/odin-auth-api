@@ -1,36 +1,34 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
+﻿using FluentValidation;
 using MediatR;
-using Odin.Auth.Application.Common;
-using Odin.Auth.Infra.Cognito;
+using Odin.Auth.Domain.Exceptions;
+using Odin.Auth.Domain.Interfaces;
+using Odin.Auth.Domain.ValuesObjects;
 
 namespace Odin.Auth.Application.ChangePassword
 {
-    public class ChangePassword : IRequestHandler<ChangePasswordInput, ChangePasswordOutput>
+    public class ChangePassword : IRequestHandler<ChangePasswordInput>
     {
-        private readonly ICommonService _commonService;
-        private readonly IAmazonCognitoIdentityRepository _awsIdentityRepository;
+        private readonly IValidator<ChangePasswordInput> _validator;
+        private readonly IKeycloakRepository _keycloakRepository;
 
-        public ChangePassword(ICommonService commonService, IAmazonCognitoIdentityRepository awsIdentityRepository)
+        public ChangePassword(IValidator<ChangePasswordInput> validator, IKeycloakRepository keycloakRepository)
         {
-            _commonService = commonService;
-            _awsIdentityRepository = awsIdentityRepository;
+            _validator = validator;
+            _keycloakRepository = keycloakRepository;
         }
 
-        public async Task<ChangePasswordOutput> Handle(ChangePasswordInput request, CancellationToken cancellationToken)
+        public async Task Handle(ChangePasswordInput input, CancellationToken cancellationToken)
         {
-            // FetchTokens for User
-            var tokenResponse = await _commonService.AuthenticateUserAsync(request.Username, request.CurrentPassword, cancellationToken);
-
-            var changePasswordRequest = new ChangePasswordRequest
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (!validationResult.IsValid) 
             {
-                AccessToken = tokenResponse.AccessToken,
-                PreviousPassword = request.CurrentPassword,
-                ProposedPassword = request.NewPassword
-            };
+                throw new EntityValidationException($"One or more validation errors occurred on type {nameof(input)}.", validationResult.ToDictionary());
+            }
 
-            await _awsIdentityRepository.ChangePasswordAsync(changePasswordRequest);
+            var user = await _keycloakRepository.FindByIdAsync(input.UserId, cancellationToken);
+            user.AddCredentials(new UserCredential(input.NewPassword, temporary: input.Temporary));
 
-            return new ChangePasswordOutput(request.Username);
+            await _keycloakRepository.ChangePasswordAsync(user, cancellationToken);
         }
     }
 }

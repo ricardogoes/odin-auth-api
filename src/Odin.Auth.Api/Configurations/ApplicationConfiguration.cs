@@ -1,19 +1,21 @@
-﻿using Odin.Auth.Application.Common;
-using Odin.Auth.Application.Login;
+﻿using FluentValidation;
+using Odin.Auth.Application.CreateUser;
 
-namespace Odin.Baseline.Api.Configurations
+namespace Odin.Auth.Api.Configurations
 {
     public static class ApplicationConfiguration
     {
 
-        public static IServiceCollection AddApplications(this IServiceCollection services)
+        public static IServiceCollection AddKeycloakApplications(this IServiceCollection services)
         {
             services.AddMediatR(cfg =>
             {
-                cfg.RegisterServicesFromAssembly(typeof(Login).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(CreateUser).Assembly);
             });
 
-            services.AddScoped<ICommonService, CommonService>();
+            ValidatorOptions.Global.LanguageManager.Enabled = false;
+
+            services.AddValidatorsFromAssemblyContaining<CreateUserInputValidator>();
 
             return services;
         }

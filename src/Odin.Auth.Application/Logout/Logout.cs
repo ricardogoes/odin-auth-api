@@ -1,24 +1,30 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
+﻿using FluentValidation;
 using MediatR;
-using Odin.Auth.Infra.Cognito;
+using Odin.Auth.Domain.Exceptions;
+using Odin.Auth.Domain.Interfaces;
 
 namespace Odin.Auth.Application.Logout
 {
-    public class Logout : IRequestHandler<LogoutInput, LogoutOutput>
+    public class Logout : IRequestHandler<LogoutInput>
     {
-        private readonly IAmazonCognitoIdentityRepository _awsIdentityRepository;
+        private readonly IValidator<LogoutInput> _validator;
+        private readonly IKeycloakRepository _keycloakRepository;
 
-        public Logout(IAmazonCognitoIdentityRepository awsIdentityRepository)
+        public Logout(IValidator<LogoutInput> validator, IKeycloakRepository keycloakRepository)
         {
-            _awsIdentityRepository = awsIdentityRepository;
+            _validator = validator;
+            _keycloakRepository = keycloakRepository;
         }
 
-        public async Task<LogoutOutput> Handle(LogoutInput input, CancellationToken cancellationToken)
+        public async Task Handle(LogoutInput input, CancellationToken cancellationToken)
         {
-            var request = new GlobalSignOutRequest { AccessToken = input.AccessToken };
-            await _awsIdentityRepository.GlobalSignOutAsync(request);
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                throw new EntityValidationException($"One or more validation errors occurred on type {nameof(input)}.", validationResult.ToDictionary());
+            }
 
-            return new LogoutOutput(input.Username, $"User '{input.Username}' logged out successfully");
+            await _keycloakRepository.LogoutAsync(input.UserId, cancellationToken);            
         }
     }
 }

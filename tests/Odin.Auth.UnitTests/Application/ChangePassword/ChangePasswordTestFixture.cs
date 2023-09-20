@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Infra.Cognito;
+﻿using Odin.Auth.Application.ChangePassword;
 
 namespace Odin.Auth.UnitTests.Application.ChangePassword
 {
@@ -9,10 +9,36 @@ namespace Odin.Auth.UnitTests.Application.ChangePassword
     public class ChangePasswordTestFixture : BaseFixture
     {
         public ChangePasswordTestFixture()
-            : base()
-        { }
+            : base() { }
 
-        public AmazonCognitoIdentityRepositoryMock GetAwsIdentityRepository()
-            => new();
+        public ChangePasswordInput GetValidChangePasswordInput(Guid? userId = null)
+        {
+            return new ChangePasswordInput
+            (
+                userId: userId ?? Guid.NewGuid(),
+                newPassword: "new-password",
+                temporary: true
+            );
+        }
+
+        public ChangePasswordInput GetInputWithEmptyUserId()
+        {
+            return new ChangePasswordInput
+            (
+                userId: Guid.Empty,
+                newPassword: "new-password",
+                temporary: true
+            );
+        }
+
+        public ChangePasswordInput GetInputWithEmptyNewPassword()
+        {
+            return new ChangePasswordInput
+            (
+                userId: Guid.NewGuid(),
+                newPassword: "",
+                temporary: true
+            );
+        }
     }
 }

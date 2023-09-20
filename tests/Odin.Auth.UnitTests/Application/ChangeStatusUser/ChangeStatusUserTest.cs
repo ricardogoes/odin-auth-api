@@ -1,8 +1,11 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
-using FluentAssertions;
+﻿using FluentAssertions;
+using FluentValidation;
+using FluentValidation.Results;
 using Moq;
-using Odin.Auth.Application.Common;
-using Odin.Auth.Infra.Cognito;
+using Odin.Auth.Application.ChangeStatusUser;
+using Odin.Auth.Domain.Entities;
+using Odin.Auth.Domain.Exceptions;
+using Odin.Auth.Domain.Interfaces;
 using App = Odin.Auth.Application.ChangeStatusUser;
 
 namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
@@ -12,87 +15,104 @@ namespace Odin.Auth.UnitTests.Application.ChangeStatusUser
     {
         private readonly ChangeStatusUserTestFixture _fixture;
 
-        private readonly Mock<ICommonService> _commonServiceMock;
-        private readonly AmazonCognitoIdentityRepositoryMock _awsIdentityRepository;
-
+        private readonly Mock<IValidator<ChangeStatusUserInput>> _validatorMock;
+        private readonly Mock<IKeycloakRepository> _keycloakRepositoryMock;
+        
         public ChangeStatusUserTest(ChangeStatusUserTestFixture fixture)
         {
             _fixture = fixture;
-
-            _commonServiceMock = new();
-            _awsIdentityRepository = _fixture.GetAwsIdentityRepository();
+            _keycloakRepositoryMock = _fixture.GetKeycloakRepositoryMock();
+            _validatorMock = new();
         }
 
-        [Fact(DisplayName = "Handle() should throw UserNotFoundException when user does not exist")]
+        [Fact(DisplayName = "Handle() should activate a user with valid data")]
         [Trait("Application", "ChangeStatusUser / ChangeStatusUser")]
-        public void EnableUserAsync_throws_UserNotFoundException()
+        public async Task ActivateUser()
         {
-            _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new UserNotFoundException("User not found"));
+            var validUser = _fixture.GetValidUser();
+            var input = _fixture.GetValidChangeStatusUserInputToActivate();
 
-            var app = new App.ChangeStatusUser(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangeStatusUserInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult()));
 
-            var ex = Assert.Throws<AggregateException>(() => app.Handle(new App.ChangeStatusUserInput
-            (
-                username: _fixture.Faker.Person.UserName,
-                action: App.ChangeStatusAction.ACTIVATE
-            ), CancellationToken.None).Result);
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(validUser);
 
-            ex.Message.Should().Contain("User not found");
+            _keycloakRepositoryMock.Setup(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(validUser));
+
+            var useCase = new App.ChangeStatusUser(_validatorMock.Object, _keycloakRepositoryMock.Object);
+            var output = await useCase.Handle(input, CancellationToken.None);
+
+            output.Should().NotBeNull();
+            output.Enabled.Should().BeTrue();
+
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Fact(DisplayName = "Handle() should return OK when activating a valid user")]
+        [Fact(DisplayName = "Handle() should throw an error when validation failed")]
         [Trait("Application", "ChangeStatusUser / ChangeStatusUser")]
-        public async Task EnableUserAsync_OK()
+        public async void ChangeStatusUser_ValidationFailed()
         {
-            var expectedOuput = new UserProfileResponse
-            (
-                username: _fixture.Faker.Person.UserName, 
-                firstName: _fixture.Faker.Person.FirstName,
-                lastName: _fixture.Faker.Person.LastName,                
-                emailAddress: _fixture.Faker.Person.Email,
-                preferredUsername: _fixture.Faker.Person.UserName
-            );
+            var userId = Guid.NewGuid();
+            var input = _fixture.GetValidChangeStatusUserInputToActivate(userId);
 
-            _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(expectedOuput));
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangeStatusUserInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult(new List<ValidationFailure> { new ValidationFailure("Property", "'Property' must not be empty") })));
 
-            var app = new App.ChangeStatusUser(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
-            
-            var output = await app.Handle(new App.ChangeStatusUserInput
-            (
-                username: expectedOuput.Username,
-                action: App.ChangeStatusAction.ACTIVATE
-            ), CancellationToken.None);
+            var useCase = new App.ChangeStatusUser(_validatorMock.Object, _keycloakRepositoryMock.Object);
 
-            output.Username.Should().Be(expectedOuput.Username);
+            var task = async () => await useCase.Handle(input, CancellationToken.None);
+
+            await task.Should().ThrowAsync<EntityValidationException>();
         }
 
-        [Fact(DisplayName = "Handle() should return OK when deactivating a valid user")]
+        [Fact(DisplayName = "Handle() should deactivate a user with valid data")]
         [Trait("Application", "ChangeStatusUser / ChangeStatusUser")]
-        public async Task DisableUserAsync_OK()
+        public async Task DeactivateUser()
         {
-            var expectedOuput = new UserProfileResponse
-            (
-                username: _fixture.Faker.Person.UserName,
-                firstName: _fixture.Faker.Person.FirstName,
-                lastName: _fixture.Faker.Person.LastName,                
-                emailAddress: _fixture.Faker.Person.Email,
-                preferredUsername: _fixture.Faker.Person.UserName
-            );
+            var validUser = _fixture.GetValidUser();
+            var input = _fixture.GetValidChangeStatusUserInputToDeactivate();
 
-            _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(expectedOuput));
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangeStatusUserInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult()));
 
-            var app = new App.ChangeStatusUser(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(validUser);
 
-            var output = await app.Handle(new App.ChangeStatusUserInput
-            (
-                username: expectedOuput.Username,
-                action: App.ChangeStatusAction.DEACTIVATE
-            ), CancellationToken.None);
+            _keycloakRepositoryMock.Setup(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(validUser));
 
-            output.Username.Should().Be(expectedOuput.Username);
+            var useCase = new App.ChangeStatusUser(_validatorMock.Object, _keycloakRepositoryMock.Object);
+            var output = await useCase.Handle(input, CancellationToken.None);
+
+            output.Should().NotBeNull();
+            output.Enabled.Should().BeFalse();
+
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact(DisplayName = "Handle() should throw an error when user not found")]
+        [Trait("Application", "ChangeStatusUser / ChangeStatusUser")]
+        public async Task ThrowWhenUserNotFound()
+        {
+            var input = _fixture.GetValidChangeStatusUserInputToActivate();
+
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangeStatusUserInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult()));
+
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(input.UserId, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new NotFoundException($"User '{input.UserId}' not found"));
+
+            var useCase = new App.ChangeStatusUser(_validatorMock.Object, _keycloakRepositoryMock.Object);
+
+            var task = async () => await useCase.Handle(input, CancellationToken.None);
+
+            await task.Should().ThrowAsync<NotFoundException>();
+
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(input.UserId, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

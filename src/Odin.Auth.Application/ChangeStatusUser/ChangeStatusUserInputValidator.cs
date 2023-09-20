@@ -6,8 +6,8 @@ namespace Odin.Auth.Application.ChangeStatusUser
     {
         public ChangeStatusUserInputValidator()
         {
-            RuleFor(x => x.Username).NotEmpty();
-            RuleFor(x => x.Action).NotNull();
+            RuleFor(x => x.UserId).NotEmpty();
+            RuleFor(x => x.Action).NotEmpty();
         }
     }
 }

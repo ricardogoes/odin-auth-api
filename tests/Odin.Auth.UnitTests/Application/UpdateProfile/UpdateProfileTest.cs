@@ -1,9 +1,13 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
-using FluentAssertions;
+﻿using FluentAssertions;
+using FluentValidation;
+using FluentValidation.Results;
 using Moq;
-using Odin.Auth.Application.Common;
-using Odin.Auth.Infra.Cognito;
-using Xunit.Abstractions;
+using Odin.Auth.Application.Logout;
+using Odin.Auth.Application.UpdateProfile;
+using Odin.Auth.Domain.Entities;
+using Odin.Auth.Domain.Exceptions;
+using Odin.Auth.Domain.Interfaces;
+using Odin.Auth.Domain.Models;
 using App = Odin.Auth.Application.UpdateProfile;
 
 namespace Odin.Auth.UnitTests.Application.UpdateProfile
@@ -13,63 +17,81 @@ namespace Odin.Auth.UnitTests.Application.UpdateProfile
     {
         private readonly UpdateProfileTestFixture _fixture;
 
-        private readonly Mock<ICommonService> _commonServiceMock;
-        private readonly AmazonCognitoIdentityRepositoryMock _awsIdentityRepository;
+        private readonly Mock<IValidator<UpdateProfileInput>> _validatorMock;
+        private readonly Mock<IKeycloakRepository> _keycloakRepositoryMock;
 
         public UpdateProfileTest(UpdateProfileTestFixture fixture)
         {
             _fixture = fixture;
 
-            _commonServiceMock = new();
-            _awsIdentityRepository = _fixture.GetAwsIdentityRepository();
+            _validatorMock = new();
+            _keycloakRepositoryMock = _fixture.GetKeycloakRepositoryMock();
         }
 
-        [Fact(DisplayName = "Handle() should return OK with valid data")]
+        [Fact(DisplayName = "Handle() should create a user with valid data")]
         [Trait("Application", "UpdateProfile / UpdateProfile")]
-        public async Task UpdateUserAttributesAsync_OK()
+        public async void UpdateProfile()
         {
-            var expectedOuput = new UserProfileResponse
-            (
-                username: _fixture.Faker.Person.UserName,
-                firstName: _fixture.Faker.Person.FirstName,
-                lastName: _fixture.Faker.Person.LastName,
-                emailAddress: _fixture.Faker.Person.Email,
-                preferredUsername: _fixture.Faker.Person.UserName
-            );
+            var input = _fixture.GetValidUpdateProfileInput();
+            var userToUpdate = new User("unit.testing", input.FirstName, input.LastName, input.Email);
+            var expectedUserUpdated = UserOutput.FromUser(userToUpdate);
 
-            _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(() => Task.FromResult(expectedOuput));
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<UpdateProfileInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult()));
 
-            var app = new App.UpdateProfile(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
-            var output = await app.Handle(new App.UpdateProfileInput
-            (
-                username: expectedOuput.Username,
-                firstName: expectedOuput.FirstName,
-                lastName: expectedOuput.LastName,
-                emailAddress: expectedOuput.EmailAddress
-            ), CancellationToken.None);
+            _keycloakRepositoryMock.Setup(s => s.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(userToUpdate));
 
-            output.Username.Should().Be(expectedOuput.Username);
+            _keycloakRepositoryMock.Setup(s => s.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(userToUpdate));
+
+            var useCase = new App.UpdateProfile(_validatorMock.Object, _keycloakRepositoryMock.Object);
+            var output = await useCase.Handle(input, CancellationToken.None);
+
+            output.Should().NotBeNull();
+            output.Username.Should().Be(expectedUserUpdated.Username);
+            output.FirstName.Should().Be(expectedUserUpdated.FirstName);
+            output.FirstName.Should().Be(expectedUserUpdated.FirstName);
+            output.LastName.Should().Be(expectedUserUpdated.LastName);
+            output.Enabled.Should().BeTrue();
+            output.Id.Should().NotBeEmpty();
         }
 
-        [Fact(DisplayName = "Handle() should throw UserNotFoundException when user does not exist")]
+        [Fact(DisplayName = "Handle() should throw an error when validation failed")]
         [Trait("Application", "UpdateProfile / UpdateProfile")]
-        public void UpdateUserAttributesAsync_throws_UserNotFoundException()
+        public async void UpdateProfile_ValidationFailed()
         {
-            _commonServiceMock.Setup(s => s.GetUserByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new UserNotFoundException("User not found"));
+            var input = _fixture.GetValidUpdateProfileInput();
 
-            var app = new App.UpdateProfile(_fixture.AppSettings, _awsIdentityRepository, _commonServiceMock.Object);
-            
-            var ex = Assert.Throws<AggregateException>(() => app.Handle(new App.UpdateProfileInput
-            (
-                username: _fixture.Faker.Person.UserName,
-                firstName: _fixture.Faker.Person.FirstName,
-                lastName: _fixture.Faker.Person.LastName,
-                emailAddress: _fixture.Faker.Person.Email
-            ), CancellationToken.None).Result);
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<UpdateProfileInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult(new List<ValidationFailure> { new ValidationFailure("Property", "'Property' must not be empty") })));
 
-            ex.Message.Should().Contain("User not found");
+            var useCase = new App.UpdateProfile(_validatorMock.Object, _keycloakRepositoryMock.Object);
+
+            var task = async () => await useCase.Handle(input, CancellationToken.None);
+
+            await task.Should().ThrowAsync<EntityValidationException>();
+        }
+
+        [Fact(DisplayName = "Handle() should throw an error when user not found")]
+        [Trait("Application", "UpdateProfile / UpdateProfile")]
+        public async Task ThrowWhenUserNotFound()
+        {
+            var input = _fixture.GetValidUpdateProfileInput();
+
+            _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<UpdateProfileInput>(), It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(new ValidationResult()));
+
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(input.UserId, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new NotFoundException($"User '{input.UserId}' not found"));
+
+            var useCase = new App.UpdateProfile(_validatorMock.Object, _keycloakRepositoryMock.Object);
+
+            var task = async () => await useCase.Handle(input, CancellationToken.None);
+
+            await task.Should().ThrowAsync<NotFoundException>();
+
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(input.UserId, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
