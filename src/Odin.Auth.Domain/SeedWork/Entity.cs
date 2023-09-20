@@ -4,7 +4,7 @@
     {
         public Guid Id { get; protected set; }
 
-        public Entity(Guid? id = null)
+        protected Entity(Guid? id = null)
         {
             Id = id ?? Guid.NewGuid();
         }

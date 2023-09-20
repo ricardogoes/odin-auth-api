@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Odin.Auth.Domain.Exceptions;
 using Odin.Auth.Infra.Keycloak.Exceptions;
@@ -29,7 +28,8 @@ namespace Odin.Auth.Api.Filters
                 details.Status = StatusCodes.Status422UnprocessableEntity;
                 details.Type = "UnprocessableEntity";
                 details.Detail = exception.Message;
-                details.Extensions["errors"] = ((EntityValidationException)exception).Errors;
+
+                details.Extensions["errors"] = (exception as EntityValidationException)?.Errors;
             }
             else if (exception is NotFoundException)
             {

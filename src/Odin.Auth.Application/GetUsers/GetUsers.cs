@@ -4,6 +4,7 @@ using Odin.Auth.Application.Helpers;
 using Odin.Auth.Domain.Exceptions;
 using Odin.Auth.Domain.Interfaces;
 using Odin.Auth.Domain.Models;
+using System.Globalization;
 
 namespace Odin.Auth.Application.GetUsers
 {
@@ -40,13 +41,13 @@ namespace Odin.Auth.Application.GetUsers
                 users = users.Where(x => x.Attributes["created_by"] == input.CreatedBy);
 
             if (input.CreatedAtStart.HasValue && input.CreatedAtEnd.HasValue)
-                users = users.Where(x => DateTime.Parse(x.Attributes["created_at"]) >= input.CreatedAtStart && DateTime.Parse(x.Attributes["created_at"]) <= input.CreatedAtEnd);
+                users = users.Where(x => DateTime.Parse(x.Attributes["created_at"], new CultureInfo("en-US")) >= input.CreatedAtStart && DateTime.Parse(x.Attributes["created_at"], new CultureInfo("en-US")) <= input.CreatedAtEnd);
 
             if (!string.IsNullOrEmpty(input.LastUpdatedBy))
                 users = users.Where(x => x.Attributes["last_updated_by"] == input.LastUpdatedBy);
 
             if (input.LastUpdatedAtStart.HasValue && input.LastUpdatedAtEnd.HasValue)
-                users = users.Where(x => DateTime.Parse(x.Attributes["last_updated_at"]) >= input.LastUpdatedAtStart && DateTime.Parse(x.Attributes["last_udpdated_at"]) <= input.LastUpdatedAtEnd);
+                users = users.Where(x => DateTime.Parse(x.Attributes["last_updated_at"], new CultureInfo("en-US")) >= input.LastUpdatedAtStart && DateTime.Parse(x.Attributes["last_udpdated_at"], new CultureInfo("en-US")) <= input.LastUpdatedAtEnd);
 
             var sortedUsers = SortHelper.ApplySort(users, input.Sort);
 

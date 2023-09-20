@@ -21,7 +21,7 @@ namespace Odin.Auth.Api.Configurations
                 })
                 .AddHeaderPropagation()
                 .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.RetryAsync(3))
-                .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30))); ;
+                .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
 
             return services;
         }
