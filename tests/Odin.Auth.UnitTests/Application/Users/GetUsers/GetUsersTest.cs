@@ -98,7 +98,7 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
                 .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, username: _expectedUsers.Items.First().Username), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, username: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).Username), CancellationToken.None);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(1);
@@ -198,7 +198,7 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
             var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, createdBy: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).Attributes["created_by"]), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.CreatedBy == _expectedUsers.Items.First().CreatedBy);
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.CreatedBy == _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).CreatedBy);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());
@@ -221,7 +221,7 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
             var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, lastUpdatedBy: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).Attributes["last_updated_by"]), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.LastUpdatedBy == _expectedUsers.Items.First().LastUpdatedBy);
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.LastUpdatedBy == _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).LastUpdatedBy);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());
