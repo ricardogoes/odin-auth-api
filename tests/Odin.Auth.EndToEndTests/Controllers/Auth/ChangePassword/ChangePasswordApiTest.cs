@@ -2,8 +2,8 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Application.ChangePassword;
-using Odin.Auth.Application.Login;
+using Odin.Auth.Application.Auth.Login;
+using Odin.Auth.Application.Auth.ChangePassword;
 using System.Net;
 using System.Text.Json;
 
@@ -13,7 +13,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
     public class ChangePasswordApiTest
     {
         private readonly ChangePasswordApiTestFixture _fixture;
-
+                
         public ChangePasswordApiTest(ChangePasswordApiTestFixture fixture)
         {
             _fixture = fixture;
@@ -25,13 +25,16 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
         {
             try
             {
-                var input = _fixture.GetValidChangePasswordInput();
+                var context = await _fixture.CreateDbContextAsync();
+                await _fixture.SeedCustomerDataAsync(context);
+
+                var input = _fixture.GetValidChangePasswordInput(_fixture.TenantSinapseId);
                 var (response, _) = await _fixture.ApiClient.PostAsync<LoginOutput>($"/v1/auth/change-password", input);
 
                 response.Should().NotBeNull();
                 response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-                var inputLogin = new LoginInput("common_user", "admin");
+                var inputLogin = new LoginInput("baseline.sinapse", "admin");
 
                 var (responseLogin, outputLogin) = await _fixture.ApiClient.PostAsync<LoginOutput>($"/v1/auth/sign-in", inputLogin);
 
@@ -45,7 +48,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
             }
             finally
             {
-                var changePasswordInput = new ChangePasswordInput(_fixture.CommonUserId, "Odin@123!", temporary: false);
+                var changePasswordInput = new ChangePasswordInput(_fixture.TenantSinapseId, _fixture.CommonUserId, "Odin@123!", temporary: false);
                 await _fixture.ApiClient.PostAsync<LoginOutput>($"/v1/auth/change-password", changePasswordInput);
             }
         }
@@ -54,8 +57,11 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
         [Trait("E2E/Controllers", "Auth / [v1]ChangePassword")]
         public async Task Auth_ThrowErrorWithEmptyUserId()
         {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new ChangePasswordInput(Guid.Empty, "new-password", temporary: true);
+            var input = new ChangePasswordInput(_fixture.TenantSinapseId, Guid.Empty, "new-password", temporary: true);
 
             var (response, output) = await _fixture.ApiClient.PostAsync<ProblemDetails>($"/v1/auth/change-password", input);
 
@@ -76,7 +82,10 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
         [Trait("E2E/Controllers", "Auth / [v1]ChangePassword")]
         public async Task Auth_ThrowErrorWithEmptyNewPassword()
         {
-            var input = new ChangePasswordInput(Guid.NewGuid(), "", temporary: true);
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
+            var input = new ChangePasswordInput(_fixture.TenantSinapseId, Guid.NewGuid(), "", temporary: true);
 
             var (response, output) = await _fixture.ApiClient.PostAsync<ProblemDetails>($"/v1/auth/change-password", input);
 

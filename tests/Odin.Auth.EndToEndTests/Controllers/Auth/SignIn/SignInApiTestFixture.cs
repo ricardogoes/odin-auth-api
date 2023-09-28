@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Application.Login;
+﻿using Odin.Auth.Application.Auth.Login;
 using Odin.Auth.EndToEndTests.Controllers.Auth;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Auth.SignIn

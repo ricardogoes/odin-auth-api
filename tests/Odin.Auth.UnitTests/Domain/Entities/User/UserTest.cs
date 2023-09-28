@@ -29,7 +29,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.User
             user.Email.Should().Be(validUser.Email);
             user.Groups.Should().HaveCount(1);
             user.Id.Should().NotBeEmpty();
-            user.Enabled.Should().BeTrue();
+            user.IsActive.Should().BeTrue();
         }
 
         [Theory(DisplayName = "ctor() should throw an error when username is empty")]
@@ -110,7 +110,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.User
 
             user.Activate();
 
-            user.Enabled.Should().BeTrue();
+            user.IsActive.Should().BeTrue();
         }
 
         [Fact(DisplayName = "Deactivate() should deactivate a user")]
@@ -123,7 +123,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.User
             user.AddGroup(validUser.Groups.First());
             user.Deactivate();
 
-            user.Enabled.Should().BeFalse();
+            user.IsActive.Should().BeFalse();
         }
 
         [Fact(DisplayName = "Update() should update a user")]
@@ -180,6 +180,23 @@ namespace Odin.Auth.UnitTests.Domain.Entities.User
 
         }
 
+        [Fact(DisplayName = "RemoveAllGroups() should remove all groups of a user")]
+        [Trait("Domain", "Entities / User")]
+        public void RemoveAllGroups()
+        {
+            var validUser = _fixture.GetValidUser();
+
+            var user = new DomainEntity.User(validUser.Username, validUser.FirstName, validUser.LastName, validUser.Email);            
+            user.AddGroup(validUser.Groups.First());
+            user.AddGroup(new UserGroup(Guid.NewGuid(), "odin-group-02", "/odin-group-02"));
+
+            user.RemoveAllGroups();
+
+            user.Groups.Should().NotBeNull();
+            user.Groups.Should().HaveCount(0);
+        }
+
+
         [Fact(DisplayName = "AddAttributes() should add a new attribute to user")]
         [Trait("Domain", "Entities / User")]
         public void AddAttributes_AddNewAttribute()
@@ -195,7 +212,43 @@ namespace Odin.Auth.UnitTests.Domain.Entities.User
             user.Attributes.Should().HaveCount(1);
             user.Attributes.First().Key.Should().Be("key");
             user.Attributes.First().Value.Should().Be("value");
+        }
 
+        [Fact(DisplayName = "AddAttributes() should update an attribute with same key")]
+        [Trait("Domain", "Entities / User")]
+        public void AddAttributes_UpdateAttribute()
+        {
+            var validUser = _fixture.GetValidUser();
+
+            var user = new DomainEntity.User(validUser.Username, validUser.FirstName, validUser.LastName, validUser.Email);
+            user.AddGroup(validUser.Groups.First());
+
+            user.AddAttribute(new KeyValuePair<string, string>("key", "value"));
+            user.AddAttribute(new KeyValuePair<string, string>("key", "new_value"));
+
+            user.Attributes.Should().NotBeNull();
+            user.Attributes.Should().HaveCount(1);
+            user.Attributes.First().Key.Should().Be("key");
+            user.Attributes.First().Value.Should().Be("new_value");
+        }
+
+        [Fact(DisplayName = "SetAuditLog() should set auditLog")]
+        [Trait("Domain", "Entities / Customer")]
+        public void AuditLog()
+        {
+            var user = _fixture.GetValidUser();
+
+            var createdAt = DateTime.Now;
+            var createdBy = "unit.testing";
+            var lastUpdatedAt = DateTime.Now;
+            var lastUpdatedBy = "unit.testing";
+
+            user.SetAuditLog(createdAt, createdBy, lastUpdatedAt, lastUpdatedBy);
+
+            user.CreatedAt.Should().Be(createdAt);
+            user.CreatedBy.Should().Be(createdBy);
+            user.LastUpdatedAt.Should().Be(lastUpdatedAt);
+            user.LastUpdatedBy.Should().Be(lastUpdatedBy);
         }
     }
 }

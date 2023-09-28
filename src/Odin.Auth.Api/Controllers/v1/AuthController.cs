@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Application.ChangePassword;
-using Odin.Auth.Application.Login;
-using Odin.Auth.Application.Logout;
+using Odin.Auth.Api.Filters;
+using Odin.Auth.Api.Models.Auth;
+using Odin.Auth.Application.Auth.ChangePassword;
+using Odin.Auth.Application.Auth.Login;
+using Odin.Auth.Application.Auth.Logout;
 
 namespace Odin.Auth.Api.Controllers.v1
 {
@@ -23,9 +25,10 @@ namespace Odin.Auth.Api.Controllers.v1
         [HttpPost("sign-in")]
         [ProducesResponseType(typeof(LoginOutput), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> SignInAsync([FromBody] LoginInput request, CancellationToken cancellationToken)
+        public async Task<IActionResult> SignInAsync([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
-            var output = await _mediator.Send(request, cancellationToken);
+            var input = new LoginInput(request.Username, request.Password);
+            var output = await _mediator.Send(input, cancellationToken);
             return Ok(output);
 
         }
@@ -34,9 +37,10 @@ namespace Odin.Auth.Api.Controllers.v1
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> SignOutAsync([FromBody] LogoutInput request, CancellationToken cancellationToken)
+        public async Task<IActionResult> SignOutAsync([FromBody] LogoutRequest request, CancellationToken cancellationToken)
         {
-            await _mediator.Send(request, cancellationToken);
+            var input = new LogoutInput(request.UserId);
+            await _mediator.Send(input, cancellationToken);
             return NoContent();
         }
 
@@ -44,9 +48,10 @@ namespace Odin.Auth.Api.Controllers.v1
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ResetPasswordAsync([FromBody] ChangePasswordInput request, CancellationToken cancellationToken)
+        public async Task<IActionResult> ResetPasswordAsync([FromHeader(Name = "X-TENANT-ID")] Guid tenantId, [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
         {
-            await _mediator.Send(request, cancellationToken);
+            var input = new ChangePasswordInput(tenantId, request.UserId, request.NewPassword, request.Temporary);
+            await _mediator.Send(input, cancellationToken);
             return NoContent();
         }
     }

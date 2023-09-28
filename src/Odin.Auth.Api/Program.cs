@@ -1,11 +1,15 @@
-using Keycloak.AuthServices.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.OpenApi.Models;
 using Odin.Auth.Api.Configurations;
 using Odin.Auth.Api.Filters;
+using Odin.Auth.Api.Middlewares;
+using Odin.Auth.Domain.Models.AppSettings;
 using Odin.Auth.Infra.Messaging.Policies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
@@ -18,19 +22,44 @@ builder.Services.AddCors(options =>
     });
 });
 
-var keycloakOptions = builder.Configuration
-    .GetSection(KeycloakAuthenticationOptions.Section)
-    .Get<KeycloakAuthenticationOptions>()!;
+var appSettings = builder.Configuration.Get<AppSettings>()!;
 
 // Add services to the container.
 builder.Services
-    .AddSingleton(keycloakOptions)
-    .AddKeycloakApplications()
+    .AddSingleton(appSettings)
+    .AddAppConnections(appSettings)
+    .AddApplications()
     .AddRepository()
     .AddSecurity(builder.Configuration)
     .AddHttpClientConfiguration(builder.Configuration)
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen()
+    .AddSwaggerGen(option =>
+    {
+        option.SwaggerDoc("v1", new OpenApiInfo { Title = "Odin Baseline", Version = "v1" });
+        option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter a valid token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "Bearer"
+        });
+        option.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type=ReferenceType.SecurityScheme,
+                            Id="Bearer"
+                        }
+                    },
+                    new string[]{}
+                }
+            });
+    })
     .AddApiVersioning(options =>
     {
         // Retorna os headers "api-supported-versions" e "api-deprecated-versions"
@@ -78,6 +107,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<TenantMiddleware>();
 
 app.UseCors(MyAllowSpecificOrigins);
 

@@ -1,4 +1,5 @@
-﻿using Odin.Auth.Application.ChangeStatusUser;
+﻿using Odin.Auth.Application.Users.ChangeStatusUser;
+using Odin.Auth.Domain.Enums;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
 {
@@ -15,6 +16,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
         public ChangeStatusUserInput GetValidInputToActivate(Guid? id = null)
             => new
             (
+                Guid.NewGuid(),
                 id ?? Guid.NewGuid(),
                 ChangeStatusAction.ACTIVATE,
                 "admin"
@@ -23,6 +25,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
         public ChangeStatusUserInput GetValidInputToDeactivate(Guid? id = null)
             => new
             (
+                Guid.NewGuid(), 
                 id ?? Guid.NewGuid(),
                 ChangeStatusAction.DEACTIVATE,
                 "admin"
@@ -31,6 +34,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
         public ChangeStatusUserInput GetInputWithInvalidAction(Guid? id = null)
             => new
             (
+                Guid.NewGuid(), 
                 id ?? Guid.NewGuid(),
                 ChangeStatusAction.INVALID,
                 "admin"

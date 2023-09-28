@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Application.Login;
-using Odin.Auth.Application.Logout;
+using Odin.Auth.Application.Auth.Login;
+using Odin.Auth.Application.Auth.Logout;
 using System.Net;
 using System.Text.Json;
 

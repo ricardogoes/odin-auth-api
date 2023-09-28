@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Odin.Auth.Application.Users;
 using Odin.Auth.Domain.Models;
 using System.Net;
 
@@ -21,6 +22,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
         [Trait("E2E/Controllers", "Users / [v1]ChangeStatusUser")]
         public async Task ActivateUser()
         {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             var input = _fixture.GetValidInputToActivate(_fixture.CommonUserId);
 
             var (response, output) = await _fixture.ApiClient.PutAsync<UserOutput>($"/v1/users/{input.UserId}/status?action=ACTIVATE", input);
@@ -29,16 +33,19 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             output.Id.Should().Be(_fixture.CommonUserId);
-            output.Username.Should().Be("common_user");
-            output.FirstName.Should().Be("Common");
-            output.LastName.Should().Be("User");
-            output.Enabled.Should().BeTrue();
+            output.Username.Should().Be("baseline.sinapse");
+            output.FirstName.Should().Be("Baseline");
+            output.LastName.Should().Be("Sinapse");
+            output.IsActive.Should().BeTrue();
         }
 
         [Fact(DisplayName = "Should deactivate a user")]
         [Trait("E2E/Controllers", "Users / [v1]ChangeStatusUser")]
         public async Task DeactivateUser()
         {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             var input = _fixture.GetValidInputToDeactivate(_fixture.CommonUserId);
 
             try
@@ -49,10 +56,10 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
 
                 output.Id.Should().Be(_fixture.CommonUserId);
-                output.Username.Should().Be("common_user");
-                output.FirstName.Should().Be("Common");
-                output.LastName.Should().Be("User");
-                output.Enabled.Should().BeFalse();
+                output.Username.Should().Be("baseline.sinapse");
+                output.FirstName.Should().Be("Baseline");
+                output.LastName.Should().Be("Sinapse");
+                output.IsActive.Should().BeFalse();
             }
             finally
             {
@@ -64,6 +71,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
         [Trait("E2E/Controllers", "Users / [v1]ChangeStatusUser")]
         public async Task ErrorWhenInvalidIds()
         {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             var (response, output) = await _fixture.ApiClient.PutAsync<ProblemDetails>($"/v1/users/{Guid.Empty}/status?action=ACTIVATE", null);
 
             response.Should().NotBeNull();
@@ -79,6 +89,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
         [Trait("E2E/Controllers", "Users / [v1]ChangeStatusUser")]
         public async Task ErrorWhenInvalidAction()
         {
+
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
 
             var userToChangeStatus = _fixture.GetValidUser();
 
@@ -100,6 +113,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
         [Trait("E2E/Controllers", "Users / [v1]ChangeStatusUser")]
         public async Task ErrorWhenNotFound()
         {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             var idToQuery = Guid.NewGuid();
             var input = _fixture.GetInputWithInvalidAction(_fixture.CommonUserId);
 

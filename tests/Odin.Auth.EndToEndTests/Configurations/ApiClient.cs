@@ -1,11 +1,11 @@
-﻿using Keycloak.AuthServices.Authentication;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+using Odin.Auth.Domain.Models.AppSettings;
 using Odin.Auth.EndToEndTests.Models;
 using Odin.Auth.Infra.Keycloak.Models;
 using Odin.Auth.Infra.Messaging.Policies;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace Odin.Auth.EndToEndTests.Configurations
@@ -14,13 +14,14 @@ namespace Odin.Auth.EndToEndTests.Configurations
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _defaultSerializeOptions;
-        private readonly KeycloakAuthenticationOptions _keycloakOptions;
+        private readonly AppSettings _appSettings;
+
+        private readonly Guid _tenantId; 
 
         private const string USERNAME = "admin";
         private const string PASSWORD = "Odin@123!";
 
-        public ApiClient(HttpClient httpClient,
-            KeycloakAuthenticationOptions keycloakOptions)
+        public ApiClient(HttpClient httpClient, AppSettings appSettings, Guid tenantId)
         {
             _httpClient = httpClient;
             _defaultSerializeOptions = new JsonSerializerOptions
@@ -28,33 +29,38 @@ namespace Odin.Auth.EndToEndTests.Configurations
                 PropertyNamingPolicy = new JsonSnakeCasePolicy(),
                 PropertyNameCaseInsensitive = true
             };
-            _keycloakOptions = keycloakOptions;
-            AddAuthorizationHeader(USERNAME, PASSWORD);
+            _appSettings = appSettings;
+            _tenantId = tenantId;
+
+            AddAuthorizationHeader(_tenantId, USERNAME, PASSWORD);
         }
 
-        private void AddAuthorizationHeader(string user, string password)
+        private void AddAuthorizationHeader(Guid tenantId, string user, string password)
         {
             var accessToken = GetAccessTokenAsync(user, password).Result;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);            
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            _httpClient.DefaultRequestHeaders.Add("X-TENANT-ID", tenantId.ToString());
         }
 
         public async Task<string> GetAccessTokenAsync(string user, string password)
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri(_keycloakOptions.AuthServerUrl)
+                BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!)
             };
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/x-www-form-urlencoded");
 
+            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}realms/odin-realm";
+
             var request = new HttpRequestMessage(
                 HttpMethod.Post,
-                $"{_keycloakOptions.KeycloakUrlRealm}/protocol/openid-connect/token");
+                $"{keycloakUrlRealm}/protocol/openid-connect/token");
 
             var collection = new List<KeyValuePair<string, string>>
             {
                 new("grant_type", "password"),
-                new("client_id", _keycloakOptions.Resource),
-                new("client_secret", _keycloakOptions.Credentials.Secret),
+                new("client_id", _appSettings.Keycloak!.Resource!),
+                new("client_secret", _appSettings.Keycloak!.Credentials!.Secret!),
                 new("username", user),
                 new("password", password)
             };
@@ -66,22 +72,22 @@ namespace Odin.Auth.EndToEndTests.Configurations
             return credentials!.AccessToken;
         }
 
-        public async Task<IEnumerable<UserRepresentation>> GetUsers(string user, string password)
+        public async Task<IEnumerable<UserRepresentation>> GetUsers(Guid tenantId, string user, string password)
         {
             var accessToken = GetAccessTokenAsync(user, password).Result; 
             
             var client = new HttpClient
             {
-                BaseAddress = new Uri(_keycloakOptions.AuthServerUrl)
+                BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!)
             };
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var adminUrl = _keycloakOptions.KeycloakUrlRealm.Replace("/realms", "/admin/realms");
+            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/odin-realm";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
-                $"{adminUrl}/users");
+                $"{keycloakUrlRealm}/users?q=tenant_id:{tenantId}");
 
             var response = await client.SendAsync(request);
 
@@ -92,9 +98,7 @@ namespace Odin.Auth.EndToEndTests.Configurations
 
         public async Task<(HttpResponseMessage, TOutput)> PostAsync<TOutput>(string route, object? request) where TOutput : class
         {
-            var requestJson = JsonSerializer.Serialize(request, _defaultSerializeOptions);
-
-            var response = await _httpClient.PostAsync(route, new StringContent(requestJson, Encoding.UTF8, "application/json"));
+            var response = await _httpClient.PostAsJsonAsync(route, request, _defaultSerializeOptions);
             var output = await GetOutputAsync<TOutput>(response);
 
             return (response, output);
@@ -102,9 +106,7 @@ namespace Odin.Auth.EndToEndTests.Configurations
 
         public async Task<(HttpResponseMessage, TOutput)> PutAsync<TOutput>(string route, object? request) where TOutput : class
         {
-            var requestJson = JsonSerializer.Serialize(request, _defaultSerializeOptions);
-
-            var response = await _httpClient.PutAsync(route, new StringContent(requestJson, Encoding.UTF8, "application/json"));
+            var response = await _httpClient.PutAsJsonAsync(route, request, _defaultSerializeOptions);
             var output = await GetOutputAsync<TOutput>(response);
 
             return (response, output);

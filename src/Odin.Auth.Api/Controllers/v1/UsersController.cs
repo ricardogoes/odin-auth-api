@@ -1,15 +1,17 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Odin.Auth.Api.Helpers;
 using Odin.Auth.Api.Models;
-using Odin.Auth.Application.ChangeStatusUser;
-using Odin.Auth.Application.CreateUser;
-using Odin.Auth.Application.GetUserById;
-using Odin.Auth.Application.GetUsers;
-using Odin.Auth.Application.UpdateProfile;
+using Odin.Auth.Api.Models.Users;
+using Odin.Auth.Application.Users;
+using Odin.Auth.Application.Users.ChangeStatusUser;
+using Odin.Auth.Application.Users.CreateUser;
+using Odin.Auth.Application.Users.GetUserById;
+using Odin.Auth.Application.Users.GetUsers;
+using Odin.Auth.Application.Users.UpdateProfile;
+using Odin.Auth.Domain.Enums;
 using Odin.Auth.Domain.Exceptions;
-using Odin.Auth.Domain.Models;
-using Odin.Auth.Infra.Messaging.Extensions;
 
 namespace Odin.Auth.Api.Controllers.v1
 {
@@ -31,6 +33,7 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(UserOutput), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(
             CancellationToken cancellationToken,
+            [FromHeader(Name = "X-TENANT-ID")] Guid tenantId,
             [FromQuery(Name = "page_number")] int? pageNumber = null,
             [FromQuery(Name = "page_size")] int? pageSize = null,
             [FromQuery(Name = "sort")] string? sort = null,
@@ -42,14 +45,15 @@ namespace Odin.Auth.Api.Controllers.v1
         {
             var input = new GetUsersInput
             (
+                tenantId: tenantId,
                 pageNumber: pageNumber ?? 1,
                 pageSize: pageSize ?? 5,
-                sort: GetSortParam(sort),
+                sort: Utils.GetSortParam(sort),
                 username: username,
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
-                enabled: isActive
+                isActive: isActive
             );
 
             var paginatedUsers = await _mediator.Send(input, cancellationToken);
@@ -61,12 +65,13 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(UserOutput), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetById([FromHeader(Name = "X-TENANT-ID")] Guid tenantId, [FromRoute] Guid id, 
+            CancellationToken cancellationToken)
         {
             if (id == Guid.Empty)
                 throw new BadRequestException("Invalid request");
 
-            var user = await _mediator.Send(new GetUserByIdInput(id), cancellationToken);
+            var user = await _mediator.Send(new GetUserByIdInput(tenantId, id), cancellationToken);
 
             return Ok(user);
         }
@@ -75,11 +80,12 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(UserOutput), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> InsertUserAsync([FromBody] CreateUserApiRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> InsertUserAsync([FromHeader(Name = "X-TENANT-ID")] Guid tenantId, [FromBody] CreateUserApiRequest request, 
+            CancellationToken cancellationToken)
         {
             var loggedUsername = User.Identity!.Name!;
 
-            var input = new CreateUserInput(request.Username, request.Password, request.PasswordIsTemporary, request.FirstName,
+            var input = new CreateUserInput(tenantId, request.Username, request.Password, request.PasswordIsTemporary, request.FirstName,
                 request.LastName, request.Email, request.Groups, loggedUsername);
 
             var output = await _mediator.Send(input, cancellationToken);
@@ -91,13 +97,14 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> UpdateUserAsync([FromRoute] Guid id, [FromBody] UpdateProfileApiRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateUserAsync([FromHeader(Name = "X-TENANT-ID")] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateProfileApiRequest request, 
+            CancellationToken cancellationToken)
         {
             if (id == Guid.Empty || id != request.UserId)
                 throw new BadRequestException("Invalid request");
 
             var loggedUsername = User.Identity!.Name!;
-            var input = new UpdateProfileInput(id, request.FirstName, request.LastName, request.Email, request.Groups, loggedUsername);
+            var input = new UpdateProfileInput(tenantId, id, request.FirstName, request.LastName, request.Email, request.Groups, loggedUsername);
 
             var output = await _mediator.Send(input, cancellationToken);
             return Ok(output);
@@ -108,7 +115,8 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> ChangeStatusUserAsync([FromRoute] Guid id, [FromQuery] string action, CancellationToken cancellationToken)
+        public async Task<IActionResult> ChangeStatusUserAsync([FromHeader(Name = "X-TENANT-ID")] Guid tenantId, [FromRoute] Guid id, [FromQuery] string action, 
+            CancellationToken cancellationToken)
         {
             if (id == Guid.Empty || string.IsNullOrWhiteSpace(action))
                 throw new BadRequestException("Invalid request");
@@ -119,26 +127,13 @@ namespace Odin.Auth.Api.Controllers.v1
             var loggedUsername = User.Identity!.Name!;
             var userUpdated = await _mediator.Send(new ChangeStatusUserInput
             (
+                tenantId, 
                 id,
                 (ChangeStatusAction)Enum.Parse(typeof(ChangeStatusAction), action, true),
                 loggedUsername
             ), cancellationToken);
 
             return Ok(userUpdated);
-        }
-
-        private static string? GetSortParam(string? sort)
-        {
-            if (string.IsNullOrWhiteSpace(sort))
-                return null;
-
-            if (sort.Contains(' '))
-            {
-                var splittedSort = sort.Split(' ');
-                return $"{splittedSort[0].ToPascalCase()} {splittedSort[1]}";
-            }
-            else
-                return sort;
-        }
+        }        
     }
 }
