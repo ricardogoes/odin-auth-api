@@ -39,7 +39,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
         {
             var client = _httpClientFactory.CreateClient("Keycloak");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Post,
@@ -48,8 +48,8 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
             var collection = new List<KeyValuePair<string, string>>
             {
                 new("grant_type", "password"),
-                new("client_id", _appSettings.Keycloak.Resource!),
-                new("client_secret", _appSettings.Keycloak.Credentials!.Secret!),
+                new("client_id", _appSettings.KeycloakSettings.Resource!),
+                new("client_secret", _appSettings.KeycloakSettings.Credentials!.Secret!),
                 new("username", username),
                 new("password", password)
             };
@@ -80,7 +80,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
             var client = _httpClientFactory.CreateClient("Keycloak");
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/x-www-form-urlencoded");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Post,
@@ -108,7 +108,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
             var client = _httpClientFactory.CreateClient("Keycloak");
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var response = await client.PutAsJsonAsync($"{keycloakUrlRealm}/users/{user.Id}/reset-password", user.Credentials.First().ToCredentialRepresentation(), cancellationToken);
 

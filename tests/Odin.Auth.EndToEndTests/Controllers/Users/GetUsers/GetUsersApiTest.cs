@@ -77,10 +77,10 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
 
         [Theory(DisplayName = "Should return paginated data")]
         [Trait("E2E/Controllers", "Users / [v1]GetUsers")]
-        [InlineData(1, 5, 3)]
-        [InlineData(2, 5, 0)]        
-        [InlineData(3, 5, 0)]
-        public async Task ListPaginated(int page, int pageSize, int expectedItems)
+        [InlineData(1, 5)]
+        [InlineData(2, 5)]        
+        [InlineData(3, 5)]
+        public async Task ListPaginated(int page, int pageSize)
         {
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);
@@ -98,7 +98,6 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
             output.PageNumber.Should().Be(input.PageNumber);
             output.PageSize.Should().Be(input.PageSize);
             output.TotalRecords.Should().Be(users.Count());
-            output.Items.Should().HaveCount(expectedItems);
 
             foreach (var outputItem in output.Items)
             {

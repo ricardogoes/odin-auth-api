@@ -22,7 +22,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-var appSettings = builder.Configuration.Get<AppSettings>()!;
+var connectionStrings = new ConnectionStringsSettings(Environment.GetEnvironmentVariable("OdinSettings:ConnectionStrings:OdinMasterDB")!);
+
+var keycloakSettings = builder.Configuration.GetSection("Keycloak").Get<KeycloakSettings>()!;
+keycloakSettings.Credentials!.Secret = Environment.GetEnvironmentVariable("OdinSettings:Keycloak:Credentials:Secret")!;
+
+var appSettings = new AppSettings(connectionStrings, keycloakSettings);
 
 // Add services to the container.
 builder.Services

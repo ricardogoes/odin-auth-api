@@ -16,7 +16,7 @@ namespace Odin.Auth.Api.Configurations
         {
             services.AddDbContext<OdinMasterDbContext>(options =>
             {
-                options.UseNpgsql(appSettings.ConnectionStringsSettings!.MasterConnection);
+                options.UseNpgsql(appSettings.ConnectionStringsSettings!.OdinMasterDbConnection);
                 options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 

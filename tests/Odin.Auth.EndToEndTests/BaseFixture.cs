@@ -9,7 +9,6 @@ using Odin.Auth.Domain.ValuesObjects;
 using Odin.Auth.EndToEndTests.Configurations;
 using Odin.Auth.Infra.Data.EF;
 using Odin.Auth.Infra.Data.EF.Models;
-using Polly;
 
 namespace Odin.Auth.EndToEndTests
 {
@@ -36,7 +35,12 @@ namespace Odin.Auth.EndToEndTests
 
             var configuration = WebAppFactory.Services.GetRequiredService<IConfiguration>();
 
-            var appSettings = configuration.Get<AppSettings>();
+            var connectionStrings = new ConnectionStringsSettings(Environment.GetEnvironmentVariable("OdinSettings:ConnectionStrings:OdinMasterDB")!);
+            
+            var keycloakSettings = configuration.GetSection("Keycloak").Get<KeycloakSettings>()!;
+            keycloakSettings.Credentials!.Secret = Environment.GetEnvironmentVariable("OdinSettings:Keycloak:Credentials:Secret")!;
+
+            var appSettings = new AppSettings(connectionStrings, keycloakSettings);
 
             ApiClient = new ApiClient(HttpClient, appSettings!, TenantSinapseId);
             ArgumentNullException.ThrowIfNull(configuration);

@@ -39,17 +39,17 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/realms/{_appSettings.Keycloak!.Realm}/protocol/openid-connect/token";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/realms/{_appSettings.KeycloakSettings!.Realm}/protocol/openid-connect/token";
 
             var collection = new List<KeyValuePair<string, string>>
             {
                 new("grant_type", "password"),
-                new("client_id", _appSettings.Keycloak.Resource!),
-                new("client_secret", _appSettings.Keycloak.Credentials!.Secret!),
+                new("client_id", _appSettings.KeycloakSettings.Resource!),
+                new("client_secret", _appSettings.KeycloakSettings.Credentials!.Secret!),
                 new("username", "admin"),
                 new("password", "admin")
             };
@@ -88,17 +88,17 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/realms/{_appSettings.Keycloak!.Realm}/protocol/openid-connect/token";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/realms/{_appSettings.KeycloakSettings!.Realm}/protocol/openid-connect/token";
 
             var collection = new List<KeyValuePair<string, string>>
             {
                 new("grant_type", "password"),
-                new("client_id", _appSettings.Keycloak.Resource!),
-                new("client_secret", _appSettings.Keycloak.Credentials!.Secret!),
+                new("client_id", _appSettings.KeycloakSettings.Resource!),
+                new("client_secret", _appSettings.KeycloakSettings.Credentials!.Secret!),
                 new("username", "admin"),
                 new("password", "error")
             };
@@ -134,12 +134,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var userId = Guid.NewGuid();
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{userId}/logout";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{userId}/logout";
 
             handler.SetupRequest(HttpMethod.Post, keycloakUrlRealm, request =>
             {
@@ -163,12 +163,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var userId = Guid.Empty;
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{userId}/logout";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{userId}/logout";
 
             handler.SetupRequest(HttpMethod.Post, keycloakUrlRealm, request =>
             {
@@ -199,12 +199,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var user = _fixture.GetValidUser();
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}/reset-password";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/reset-password";
 
             handler.SetupRequest(HttpMethod.Put, keycloakUrlRealm, request =>
             {
@@ -230,12 +230,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var user = _fixture.GetValidUser();
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}/reset-password";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/reset-password";
 
             handler.SetupRequest(HttpMethod.Put, keycloakUrlRealm, request =>
             {

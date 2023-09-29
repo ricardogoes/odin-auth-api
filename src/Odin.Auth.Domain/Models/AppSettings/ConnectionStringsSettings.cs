@@ -2,6 +2,11 @@
 {
     public class ConnectionStringsSettings
     {
-        public string? MasterConnection { get; set; }
+        public string OdinMasterDbConnection { get; private set; }
+
+        public ConnectionStringsSettings(string odinMasterDbConnection)
+        {
+            OdinMasterDbConnection = odinMasterDbConnection;
+        }
     }
 }

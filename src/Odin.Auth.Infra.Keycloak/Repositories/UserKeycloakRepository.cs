@@ -42,7 +42,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
             var client = _httpClientFactory.CreateClient("Keycloak");
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var response = await client.PostAsJsonAsync($"{keycloakUrlRealm}/users", user.ToUserRepresentation(), cancellationToken);
 
@@ -65,7 +65,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
             var client = _httpClientFactory.CreateClient("Keycloak");
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}"; 
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}"; 
             
             var response = await client.PutAsJsonAsync($"{keycloakUrlRealm}/users/{user.Id}", user.ToUserRepresentation(), cancellationToken);
 
@@ -87,7 +87,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
         {
             var client = _httpClientFactory.CreateClient("Keycloak");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
@@ -128,7 +128,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
 
             var client = _httpClientFactory.CreateClient("Keycloak");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
@@ -165,7 +165,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
         {
             var client = _httpClientFactory.CreateClient("Keycloak");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
@@ -194,7 +194,7 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
         {
             var client = _httpClientFactory.CreateClient("Keycloak");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Get,

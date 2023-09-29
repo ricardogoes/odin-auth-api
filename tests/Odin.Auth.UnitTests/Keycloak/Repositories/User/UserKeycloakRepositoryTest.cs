@@ -63,11 +63,11 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users";
 
             var user = _fixture.GetValidUser();
 
@@ -95,11 +95,11 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users";
 
             var user = _fixture.GetValidUser();
                         
@@ -134,12 +134,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var user = _fixture.GetValidUser();
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}";
 
             handler.SetupRequest(HttpMethod.Put, keycloakUrlRealm, request =>
             {
@@ -165,12 +165,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var user = _fixture.GetValidUser();
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}";
                         
             handler.SetupRequest(HttpMethod.Put, keycloakUrlRealm, request =>
             {
@@ -203,17 +203,17 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var tenantId = Guid.NewGuid();
             var user = _fixture.GetValidUser(tenantId);
             
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}")
                 .ReturnsJsonResponse(HttpStatusCode.OK, user.ToUserRepresentation());
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}/groups")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/groups")
                 .ReturnsJsonResponse(HttpStatusCode.OK, user.Groups);
 
             var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
@@ -243,14 +243,14 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var tenantId = Guid.NewGuid();
             var user = _fixture.GetValidUser(tenantId);
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}")
                 .ReturnsJsonResponse(HttpStatusCode.BadRequest, new KeycloakResponseError("Error", "ErrorDescription"), new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = new JsonSnakeCasePolicy(),
@@ -276,14 +276,14 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var tenantId = Guid.NewGuid();
             var user = _fixture.GetValidUser(tenantId);
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}")
                 .ReturnsResponse(HttpStatusCode.NotFound);
 
             var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
@@ -305,14 +305,14 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var tenantId = Guid.NewGuid();
             var user = _fixture.GetValidUser();
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}")
                 .ReturnsResponse(HttpStatusCode.NotFound);
 
             var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
@@ -334,21 +334,21 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var tenantId = Guid.NewGuid();
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/count?q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/count?q=tenant_id:{tenantId}")
                 .ReturnsResponse("10");
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users?first=0&max={10}&q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users?first=0&max={10}&q=tenant_id:{tenantId}")
                 .ReturnsJsonResponse(HttpStatusCode.OK, _expectedUsers.Take(10));
 
             foreach (var user in _expectedUsers.Take(10))
             {
-                handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}/groups")
+                handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/groups")
                 .ReturnsJsonResponse(HttpStatusCode.OK, new List<UserGroup> { new UserGroup(Guid.NewGuid(), user.Groups!.First(), $"/{user.Groups!.First()}")});
             }
 
@@ -371,16 +371,16 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var tenantId = Guid.NewGuid();
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/count?q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/count?q=tenant_id:{tenantId}")
                 .ReturnsResponse("10");
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users?first=0&max={10}&q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users?first=0&max={10}&q=tenant_id:{tenantId}")
                 .ReturnsJsonResponse(HttpStatusCode.BadRequest, new KeycloakResponseError("Error", "ErrorDescription"), new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = new JsonSnakeCasePolicy(),
@@ -406,13 +406,13 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var user = _fixture.GetValidUser();
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}/groups")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/groups")
                 .ReturnsJsonResponse(HttpStatusCode.OK, user.Groups);
 
             var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
@@ -434,13 +434,13 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .Returns(() =>
                 {
                     var client = handler.CreateClient();
-                    client.BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!);
+                    client.BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!);
                     return client;
                 });
 
             var user = _fixture.GetValidUser();
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/{_appSettings.Keycloak!.Realm}/users/{user.Id}/groups")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/groups")
                 .ReturnsJsonResponse(HttpStatusCode.BadRequest, new KeycloakResponseError("Error", "ErrorDescription"), new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = new JsonSnakeCasePolicy(),

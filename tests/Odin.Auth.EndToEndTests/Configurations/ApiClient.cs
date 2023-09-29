@@ -46,11 +46,11 @@ namespace Odin.Auth.EndToEndTests.Configurations
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!)
+                BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!)
             };
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/x-www-form-urlencoded");
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}realms/odin-realm";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}realms/odin-realm";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Post,
@@ -59,8 +59,8 @@ namespace Odin.Auth.EndToEndTests.Configurations
             var collection = new List<KeyValuePair<string, string>>
             {
                 new("grant_type", "password"),
-                new("client_id", _appSettings.Keycloak!.Resource!),
-                new("client_secret", _appSettings.Keycloak!.Credentials!.Secret!),
+                new("client_id", _appSettings.KeycloakSettings!.Resource!),
+                new("client_secret", _appSettings.KeycloakSettings!.Credentials!.Secret!),
                 new("username", user),
                 new("password", password)
             };
@@ -78,12 +78,12 @@ namespace Odin.Auth.EndToEndTests.Configurations
             
             var client = new HttpClient
             {
-                BaseAddress = new Uri(_appSettings.Keycloak!.AuthServerUrl!)
+                BaseAddress = new Uri(_appSettings.KeycloakSettings!.AuthServerUrl!)
             };
             client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var keycloakUrlRealm = $"{_appSettings.Keycloak!.AuthServerUrl}/admin/realms/odin-realm";
+            var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/odin-realm";
 
             var request = new HttpRequestMessage(
                 HttpMethod.Get,

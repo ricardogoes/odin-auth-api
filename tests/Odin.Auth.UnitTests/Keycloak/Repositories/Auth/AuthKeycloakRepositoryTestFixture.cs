@@ -14,16 +14,13 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
 
         public AppSettings GetAppSettings()
         {
-            var connectionsString = new ConnectionStringsSettings
-            {
-                MasterConnection = ""
-            };
+            var connectionsStrings = new ConnectionStringsSettings("");
 
             var keycloak = new KeycloakSettings 
             { 
                 AuthServerUrl = "http://localhost:1234",
                 ConfidentialPort = 0,
-                Credentials = new KeycloakCredentials { Secret = "123", AdminUsername = "admin", AdminPassword = "admin" },
+                Credentials = new KeycloakCredentials { Secret = "123" },
                 Realm = "odin-realm",
                 Resource = "odin-client",
                 RolesSource = "Realm",
@@ -31,11 +28,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 VerifyTokenAudience = true
             };
 
-            return new AppSettings
-            {
-                ConnectionStringsSettings = connectionsString,
-                Keycloak = keycloak
-            };
+            return new AppSettings(connectionsStrings, keycloak);
         }
     }
 }
