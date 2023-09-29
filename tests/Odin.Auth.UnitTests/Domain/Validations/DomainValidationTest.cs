@@ -108,7 +108,6 @@ namespace Odin.Auth.UnitTests.Domain.Validations
         }
 
 
-
         [Theory(DisplayName = "MinLength() should validate when value length is greater than mininum length")]
         [Trait("Domain", "Validations / Domain Validation")]
         [MemberData(

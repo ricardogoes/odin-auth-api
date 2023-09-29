@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Api.Models;
-using Odin.Auth.Domain.Models;
+using Odin.Auth.Api.Models.Users;
+using Odin.Auth.Application.Users;
 using System.Net;
 using System.Text.Json;
 
@@ -23,6 +23,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
         [Trait("E2E/Controllers", "Users / [v1]UpdateUser")]
         public async Task UpdateValidUser()
         {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             var input = _fixture.GetValidInput(_fixture.CommonUserId);
 
             var (response, output) = await _fixture.ApiClient.PutAsync<UserOutput>($"/v1/users/{_fixture.CommonUserId}", input);
@@ -40,6 +43,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
         [Trait("E2E/Controllers", "Users / [v1]UpdateUser")]
         public async Task ErrorWhenInvalidIds()
         {
+
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
 
             var input = _fixture.GetValidInput(_fixture.CommonUserId);
 
@@ -61,7 +67,10 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
             MemberType = typeof(UpdateUserApiTestDataGenerator)
         )]
         public async Task ErrorWhenCantInstantiateUser(UpdateProfileApiRequest input, string property, string expectedDetail)
-        {            
+        {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             input.ChangeUserId(_fixture.CommonUserId);
 
             var (response, output) = await _fixture.ApiClient.PutAsync<ProblemDetails>($"/v1/users/{_fixture.CommonUserId}", input);
@@ -83,6 +92,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
         [Trait("E2E/Controllers", "Users / [v1]UpdateUser")]
         public async Task ErrorWhenNotFound()
         {
+            var context = await _fixture.CreateDbContextAsync();
+            await _fixture.SeedCustomerDataAsync(context);
+
             var idToQuery = Guid.NewGuid();
             var input = _fixture.GetValidInput(idToQuery);
 

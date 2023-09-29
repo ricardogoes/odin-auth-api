@@ -1,5 +1,4 @@
-﻿using Odin.Auth.Application.Logout;
-using Odin.Auth.EndToEndTests.Controllers.Auth;
+﻿using Odin.Auth.Application.Auth.Logout;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Auth.SignOut
 {
@@ -15,7 +14,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.SignOut
 
         public LogoutInput GetValidLogoutInput()
         {
-            return new LogoutInput(AdminUserId);
+            return new LogoutInput(RealmAdminUserId);
         }
     }
 }

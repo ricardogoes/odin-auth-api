@@ -51,6 +51,9 @@ jobs:
         shell: pwsh
         run: dotnet tool install --global dotnet-coverage
 
+      - name: Add GitHub Packages Source
+        run: dotnet nuget add source https://nuget.pkg.github.com/ricardogoes/index.json -n github -u ${{secrets.GH_USERNAME}}  -p ${{secrets.GH_TOKEN}} --store-password-in-clear-text
+
       - name: Build, test and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

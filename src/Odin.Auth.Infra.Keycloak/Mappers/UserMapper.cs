@@ -23,10 +23,10 @@ namespace Odin.Auth.Infra.Keycloak.Mappers
                 LastName = user.LastName,
                 Email = user.Email,
                 EmailVerified = user.EmailVerified,
-                Enabled = user.Enabled,
+                Enabled = user.IsActive,
                 Attributes = attributes,
                 Groups = user.Groups.Select(group => group.Name).ToList(),
-                Credentials = user.Credentials!.ToCredentialRepresentation()                
+                Credentials = user.Credentials!.ToCredentialRepresentation()
             };
         }
 
@@ -42,7 +42,7 @@ namespace Odin.Auth.Infra.Keycloak.Mappers
                 firstName: userRepresentation.FirstName!,
                 lastName: userRepresentation.LastName!,
                 email: userRepresentation.Email!,
-                enabled: userRepresentation.Enabled!.Value                
+                isActive: userRepresentation.Enabled!.Value
             );
 
             if (userRepresentation.Attributes is not null && userRepresentation.Attributes.Any())
@@ -58,6 +58,13 @@ namespace Odin.Auth.Infra.Keycloak.Mappers
                 foreach (var group in userGroups)
                     user.AddGroup(group);
             }
+
+            var createdAt = DateTime.Parse(user.Attributes["created_at"]!);
+            var createdBy = user.Attributes["created_by"]!;
+            var lastUpdatedAt = DateTime.Parse(user.Attributes["last_updated_at"]!);
+            var lastUpdatedBy = user.Attributes["last_updated_by"]!;
+
+            user.SetAuditLog(createdAt, createdBy, lastUpdatedAt, lastUpdatedBy);
 
             return user;
         }

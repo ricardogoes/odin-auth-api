@@ -10,6 +10,7 @@ COPY *.sln .
 COPY src/Odin.Auth.Api/*.csproj ./src/Odin.Auth.Api/
 COPY src/Odin.Auth.Application/*.csproj ./src/Odin.Auth.Application/
 COPY src/Odin.Auth.Domain/*.csproj ./src/Odin.Auth.Domain/
+COPY src/Odin.Auth.Infra.Data/*.csproj ./src/Odin.Auth.Data.Keycloak/
 COPY src/Odin.Auth.Infra.Keycloak/*.csproj ./src/Odin.Auth.Infra.Keycloak/
 COPY src/Odin.Auth.Infra.Messaging/*.csproj ./src/Odin.Auth.Infra.Messaging/
 COPY tests/Odin.Auth.UnitTests/*.csproj ./tests/Odin.Auth.UnitTests/
@@ -21,6 +22,7 @@ RUN dotnet restore
 COPY src/Odin.Auth.Api/. ./src/Odin.Auth.Api/
 COPY src/Odin.Auth.Application/. ./src/Odin.Auth.Application/
 COPY src/Odin.Auth.Domain/. ./src/Odin.Auth.Domain/
+COPY src/Odin.Auth.Infra.Data/. ./src/Odin.Auth.Infra.Data/ 
 COPY src/Odin.Auth.Infra.Keycloak/. ./src/Odin.Auth.Infra.Keycloak/ 
 COPY src/Odin.Auth.Infra.Messaging/. ./src/Odin.Auth.Infra.Messaging/ 
 

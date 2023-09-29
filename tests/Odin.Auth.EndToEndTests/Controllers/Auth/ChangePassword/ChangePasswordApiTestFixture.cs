@@ -1,5 +1,4 @@
-﻿using Odin.Auth.Application.ChangePassword;
-using Odin.Auth.EndToEndTests.Controllers.Auth;
+﻿using Odin.Auth.Application.Auth.ChangePassword;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
 {
@@ -15,9 +14,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
             : base()
         { }
 
-        public ChangePasswordInput GetValidChangePasswordInput()
+        public ChangePasswordInput GetValidChangePasswordInput(Guid tenantId)
         {
-            return new ChangePasswordInput(CommonUserId, "admin", temporary: false);
+            return new ChangePasswordInput(tenantId, CommonUserId, "admin", temporary: false);
         }
     }
 }

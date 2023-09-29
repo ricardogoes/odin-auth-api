@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Application.Login;
+using Odin.Auth.Application.Auth.Login;
 using System.Net;
 using System.Text.Json;
 
@@ -21,7 +21,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.SignIn
         [Trait("E2E/Controllers", "Auth / [v1]SignIn")]
         public async Task AuthValid()
         {
-            var input = _fixture.GetValidLoginInput();
+            var input = _fixture.GetValidLoginRequest();
 
             var (response, output) = await _fixture.ApiClient.PostAsync<LoginOutput>($"/v1/auth/sign-in", input);
 

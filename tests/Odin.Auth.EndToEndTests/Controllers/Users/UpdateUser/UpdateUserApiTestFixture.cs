@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Api.Models;
+﻿using Odin.Auth.Api.Models.Users;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
 {

@@ -34,19 +34,4 @@ namespace Odin.Auth.Infra.Keycloak.Models
         [JsonPropertyName("groups")] 
         public List<string>? Groups { get; set; }
     }
-
-    public class CredentialRepresentation
-    {
-        [JsonPropertyName("id")]
-        public Guid? Id { get; set; }
-        
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-        
-        [JsonPropertyName("value")]
-        public string? Value { get; set; }
-        
-        [JsonPropertyName("temporary")]
-        public bool? Temporary { get; set; }
-    }
 }

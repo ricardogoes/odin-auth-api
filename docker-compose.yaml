@@ -1,9 +1,9 @@
 version: '3.4'
 
 services:
-  odin.keycloak.db:
-    container_name: odin_keycloak_db
-    hostname: odin_keycloak_db
+  odin.auth.db:
+    container_name: odin_auth_db
+    hostname: odin_auth_db
     image: postgres
     environment:
       POSTGRES_USER: root
@@ -24,7 +24,7 @@ services:
     image: quay.io/keycloak/keycloak:22.0    
     environment:
       KC_DB: postgres
-      KC_DB_URL_HOST: odin_keycloak_db
+      KC_DB_URL_HOST: odin_auth_db
       KC_DB_URL_DATABASE: odin_keycloak
       KC_DB_USERNAME: root
       KC_DB_PASSWORD: tIiefwntHebhEXI78twf
@@ -37,7 +37,7 @@ services:
     command:
       - start-dev
     depends_on:
-      odin.keycloak.db:
+      odin.auth.db:
         condition: service_healthy
 
 networks:

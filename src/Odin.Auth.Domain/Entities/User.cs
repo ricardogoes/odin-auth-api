@@ -8,21 +8,24 @@ namespace Odin.Auth.Domain.Entities
     public class User : Entity
     {        
         public string Username { get; private set; }
-        public bool Enabled { get; private set; }
+        public bool IsActive { get; private set; }
         public bool EmailVerified { get; private set; }
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string Email { get; private set; }
+
+        //TODO: Implementar IsCustomerAdmin
+
         public Dictionary<string, string> Attributes { get; private set; }
         public List<UserCredential> Credentials { get; private set; }
         public List<UserGroup> Groups { get; set; }
 
         [JsonConstructor]
-        public User(Guid id, string username, string firstName, string lastName, string email, bool enabled) 
+        public User(Guid id, string username, string firstName, string lastName, string email, bool isActive) 
             : base(id)
         {
             Username = username;
-            Enabled = enabled;
+            IsActive = isActive;
             EmailVerified = true;
             FirstName = firstName;
             LastName = lastName;
@@ -38,7 +41,7 @@ namespace Odin.Auth.Domain.Entities
             : base()
         {
             Username = username;
-            Enabled = true;
+            IsActive = true;
             EmailVerified = true;
             FirstName = firstName;
             LastName = lastName;
@@ -46,6 +49,16 @@ namespace Odin.Auth.Domain.Entities
             Attributes = new Dictionary<string, string>();
             Credentials = new List<UserCredential>();
             Groups = new List<UserGroup>();
+
+            Validate();
+        }
+
+        public void SetAuditLog(DateTime createdAt, string createdBy, DateTime lastUpdatedAt, string lastUpdatedBy)
+        {
+            CreatedAt = createdAt;
+            CreatedBy = createdBy;
+            LastUpdatedAt = lastUpdatedAt;
+            LastUpdatedBy = lastUpdatedBy;
 
             Validate();
         }
@@ -89,13 +102,13 @@ namespace Odin.Auth.Domain.Entities
 
         public void Activate()
         {
-            Enabled = true;
+            IsActive = true;
             Validate();
         }
 
         public void Deactivate()
         {
-            Enabled = false;
+            IsActive = false;
             Validate();
         }
 
