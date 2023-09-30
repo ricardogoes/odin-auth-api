@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "env", "env", "{F80B60E8-C18D-4CAA-89CB-63A7B67B6C49}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yaml = docker-compose.yaml
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odin.Auth.Infra.Keycloak", "src\Odin.Auth.Infra.Keycloak\Odin.Auth.Infra.Keycloak.csproj", "{8CCD1BCA-9074-4ED4-A945-FC64033A6093}"
@@ -26,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odin.Auth.Application", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odin.Auth.EndToEndTests", "tests\Odin.Auth.EndToEndTests\Odin.Auth.EndToEndTests.csproj", "{9AE6A601-6354-4CA9-9794-D93A34264A05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Odin.Auth.Infra.Data", "src\Odin.Auth.Infra.Data\Odin.Auth.Infra.Data.csproj", "{3291AB67-E365-4E31-A38A-B54A2E44F369}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odin.Auth.Infra.Data", "src\Odin.Auth.Infra.Data\Odin.Auth.Infra.Data.csproj", "{3291AB67-E365-4E31-A38A-B54A2E44F369}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,7 +14,10 @@ namespace Odin.Auth.Api.Middlewares
 
         public async Task InvokeAsync(HttpContext context, ICustomerRepository customerRepository)
         {
-            if (context.Request.Path.HasValue && !context.Request.Path.Value!.Contains("customer"))
+            if (context.Request.Path.HasValue 
+                && !context.Request.Path.Value!.Contains("customer")
+                && !context.Request.Path.Value!.Contains("sign-in")
+                && !context.Request.Path.Value!.Contains("sign-out"))
             {
                 context.Request.Headers.TryGetValue("X-TENANT-ID", out var tenantId);
 
