@@ -105,7 +105,6 @@ namespace Odin.Auth.EndToEndTests
         public Customer GetValidCustomer()
         {
             var customer = new Customer(GetValidName(), GetValidDocument(), isActive: GetRandomBoolean());
-            customer.Create("unit.testing");
 
             return customer;
         }

@@ -9,7 +9,6 @@ namespace Odin.Auth.Application.Customers.ChangeStatusCustomer
         {
             RuleFor(x => x.Id).NotEmpty();
             RuleFor(x => x.Action).NotEmpty();
-            RuleFor(x => x.LoggedUsername).NotEmpty();
         }
     }
 }

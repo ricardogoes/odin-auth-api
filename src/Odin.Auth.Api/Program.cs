@@ -32,6 +32,7 @@ var appSettings = new AppSettings(connectionStrings, keycloakSettings);
 // Add services to the container.
 builder.Services
     .AddSingleton(appSettings)
+    .AddHttpContextAccessor()
     .AddAppConnections(appSettings)
     .AddApplications()
     .AddRepository()

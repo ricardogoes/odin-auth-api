@@ -1,9 +1,8 @@
 ﻿using MediatR;
-using Odin.Auth.Domain.SeedWork;
 
 namespace Odin.Auth.Application.Users.CreateUser
 {
-    public class CreateUserInput : Tenant, IRequest<UserOutput>
+    public class CreateUserInput : IRequest<UserOutput>
     {
         public string Username { get; private set; }
         public string Password { get; private set; }
@@ -13,10 +12,7 @@ namespace Odin.Auth.Application.Users.CreateUser
         public string Email { get; private set; }
         public List<string> Groups { get; private set; }
 
-        public string LoggedUsername { get; private set; }
-
-        public CreateUserInput(Guid tenantId, string username, string password, bool passwordIsTemporary, string firstName, string lastName, string email, List<string> groups, string loggedUsername)
-            : base(tenantId)
+        public CreateUserInput(string username, string password, bool passwordIsTemporary, string firstName, string lastName, string email, List<string> groups)
         {
             Username = username;
             Password = password;
@@ -25,7 +21,6 @@ namespace Odin.Auth.Application.Users.CreateUser
             LastName = lastName;
             Email = email;
             Groups = groups;
-            LoggedUsername = loggedUsername;
         }
     }
 }

@@ -14,14 +14,12 @@
                 {
                     case 0:
                         invalidInputsList.Add(new object[] {
-                        fixture.GetInputWithEmptyUsername()/*,
-                        "Username should not be empty or null"*/
+                        fixture.GetInputWithEmptyUsername()
                     });
                         break;
                     case 1:
                         invalidInputsList.Add(new object[] {
-                        fixture.GetInputWithEmptyPassword()/*,
-                        "Password should not be empty or null"*/
+                        fixture.GetInputWithEmptyPassword()
                     });
                         break;
                     default:

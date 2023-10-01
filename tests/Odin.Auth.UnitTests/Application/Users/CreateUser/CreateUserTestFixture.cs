@@ -16,15 +16,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
         {
             return new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: Faker.Person.UserName,
                 password: "password",
                 passwordIsTemporary: true,
                 firstName: Faker.Person.FirstName,
                 lastName: Faker.Person.LastName,
                 email: Faker.Person.Email,
-                groups: new List<string> { "role-01 " },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01 " }
             );
         }
 
@@ -32,15 +30,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
         {
             return new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: "",
                 password: "password",
                 passwordIsTemporary: true,
                 firstName: Faker.Person.FirstName,
                 lastName: Faker.Person.LastName,
                 email: Faker.Person.Email,
-                groups: new List<string> { "role-01 " },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01 " }
             );
         }
 
@@ -48,15 +44,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
         {
             return new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: Faker.Person.UserName,
                 password: "",
                 passwordIsTemporary: true,
                 firstName: Faker.Person.FirstName,
                 lastName: Faker.Person.LastName,
                 email: Faker.Person.Email,
-                groups: new List<string> { "role-01 " },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01 " }
             );
         }
 
@@ -64,15 +58,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
         {
             return new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: Faker.Person.UserName,
                 password: "password",
                 passwordIsTemporary: true,
                 firstName: "",
                 lastName: Faker.Person.LastName,
                 email: Faker.Person.Email,
-                groups: new List<string> { "role-01 " },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01 " }
             );
         }
 
@@ -80,15 +72,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
         {
             return new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: Faker.Person.UserName,
                 password: "password",
                 passwordIsTemporary: true,
                 firstName: Faker.Person.FirstName,
                 lastName: "",
                 email: Faker.Person.Email,
-                groups: new List<string> { "role-01 " },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01 " }
             );
         }
 
@@ -96,15 +86,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
         {
             return new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: Faker.Person.UserName,
                 password: "password",
                 passwordIsTemporary: true,
                 firstName: Faker.Person.FirstName,
                 lastName: Faker.Person.LastName,
                 email: "",
-                groups: new List<string> { "role-01 " },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01 " }
             );
         }
 
@@ -112,15 +100,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
         {
             return new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: Faker.Person.UserName,
                 password: "password",
                 passwordIsTemporary: true,
                 firstName: Faker.Person.FirstName,
                 lastName: Faker.Person.LastName,
                 email: Faker.Person.Email,
-                groups: new List<string>(),
-                loggedUsername: "admin"
+                groups: new List<string>()
             );
         }
     }

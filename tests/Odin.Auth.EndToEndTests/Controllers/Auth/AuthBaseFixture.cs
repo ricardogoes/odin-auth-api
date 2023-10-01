@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Api.Models.Auth;
+﻿using Odin.Auth.Application.Auth.Login;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Auth
 {
@@ -9,9 +9,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth
         {
         }
 
-        public LoginRequest GetValidLoginRequest()
+        public LoginInput GetValidLoginRequest()
         {
-            return new LoginRequest("admin", "Odin@123!");
+            return new LoginInput("admin", "Odin@123!");
         }
     }
 }

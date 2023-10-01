@@ -47,12 +47,12 @@ namespace Odin.Auth.UnitTests.Application.Customers.UpdateCustomer
             _repositoryMock.Setup(x => x.FindByIdAsync(customer.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
 
-            customer.Update("Updated Name", _fixture.GetValidCustomer().Document, "unit-testing-01");
+            customer.Update("Updated Name", _fixture.GetValidCustomer().Document);
 
             _repositoryMock.Setup(x => x.UpdateAsync(It.IsAny<Customer>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(customer));
 
-            var input = new UpdateCustomerInput(customer.Id, customer.Name, customer.Document, "unit-testing-01");
+            var input = new UpdateCustomerInput(customer.Id, customer.Name, customer.Document);
 
             var useCase = new App.UpdateCustomer(_documentServiceMock.Object, _unitOfWorkMock.Object, _repositoryMock.Object, _validatorMock.Object);
             var output = await useCase.Handle(input, CancellationToken.None);

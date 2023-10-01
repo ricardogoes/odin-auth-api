@@ -35,7 +35,7 @@ namespace Odin.Auth.UnitTests.Application.Users.ChangeStatusUser
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangeStatusUserInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(validUser);
 
             _keycloakRepositoryMock.Setup(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -47,7 +47,7 @@ namespace Odin.Auth.UnitTests.Application.Users.ChangeStatusUser
             output.Should().NotBeNull();
             output.IsActive.Should().BeTrue();
 
-            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
             _keycloakRepositoryMock.Verify(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -61,7 +61,7 @@ namespace Odin.Auth.UnitTests.Application.Users.ChangeStatusUser
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangeStatusUserInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(validUser);
 
             _keycloakRepositoryMock.Setup(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -73,7 +73,7 @@ namespace Odin.Auth.UnitTests.Application.Users.ChangeStatusUser
             output.Should().NotBeNull();
             output.IsActive.Should().BeFalse();
 
-            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
             _keycloakRepositoryMock.Verify(x => x.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -103,7 +103,7 @@ namespace Odin.Auth.UnitTests.Application.Users.ChangeStatusUser
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangeStatusUserInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new NotFoundException($"User '{input.UserId}' not found"));
 
             var useCase = new App.ChangeStatusUser(_validatorMock.Object, _keycloakRepositoryMock.Object);
@@ -112,7 +112,7 @@ namespace Odin.Auth.UnitTests.Application.Users.ChangeStatusUser
 
             await task.Should().ThrowAsync<NotFoundException>();
 
-            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

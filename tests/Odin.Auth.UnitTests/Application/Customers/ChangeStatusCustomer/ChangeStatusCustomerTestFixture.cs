@@ -1,5 +1,4 @@
-﻿using Odin.Auth.UnitTests.Application.Customers;
-using Odin.Auth.Application.Customers.ChangeStatusCustomer;
+﻿using Odin.Auth.Application.Customers.ChangeStatusCustomer;
 using Odin.Auth.Domain.Enums;
 
 namespace Odin.Auth.UnitTests.Application.Customers.ChangeStatusCustomer
@@ -17,32 +16,21 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeStatusCustomer
             => new
             (            
                 id ?? Guid.NewGuid(),
-                ChangeStatusAction.ACTIVATE,
-                "unit.testing"
+                ChangeStatusAction.ACTIVATE
             );
 
         public ChangeStatusCustomerInput GetValidChangeStatusCustomerInputToDeactivate(Guid? id = null)
             => new
             (
                 id ?? Guid.NewGuid(),
-                ChangeStatusAction.DEACTIVATE,
-                "unit.testing"
+                ChangeStatusAction.DEACTIVATE
             );
 
         public ChangeStatusCustomerInput GetChangeStatusCustomerInputWithEmptyAction(Guid? id = null)
           => new
           (
               id ?? Guid.NewGuid(),
-              null,
-              "unit.testing"
+              null
           );
-
-        public ChangeStatusCustomerInput GetChangeStatusCustomerInputWithEmptyLoggedUsername(Guid? id = null)
-           => new
-           (
-               id ?? Guid.NewGuid(),
-               ChangeStatusAction.ACTIVATE,
-               ""
-           );
     }
 }

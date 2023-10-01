@@ -25,10 +25,6 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
             model.Name.Should().Be(customer.Name);
             model.Document.Should().Be(customer.Document);
             model.IsActive.Should().Be(customer.IsActive);
-            model.CreatedAt.Should().Be(customer.CreatedAt);
-            model.CreatedBy.Should().Be(customer.CreatedBy);
-            model.LastUpdatedAt.Should().Be(customer.LastUpdatedAt);
-            model.LastUpdatedBy.Should().Be(customer.LastUpdatedBy);
 
             model.StreetName.Should().BeNull();
             model.StreetNumber.Should().BeNull();
@@ -45,7 +41,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
         {
             var customer = _fixture.GetValidCustomer();
             var address = _fixture.GetValidAddress();
-            customer.ChangeAddress(address, "unit.testing");
+            customer.ChangeAddress(address);
 
             var model = customer.ToCustomerModel();
 
@@ -54,10 +50,6 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
             model.Name.Should().Be(customer.Name);
             model.Document.Should().Be(customer.Document);
             model.IsActive.Should().Be(customer.IsActive);
-            model.CreatedAt.Should().Be(customer.CreatedAt);
-            model.CreatedBy.Should().Be(customer.CreatedBy);
-            model.LastUpdatedAt.Should().Be(customer.LastUpdatedAt);
-            model.LastUpdatedBy.Should().Be(customer.LastUpdatedBy);
 
             model.StreetName.Should().Be(customer.Address!.StreetName);
             model.StreetNumber.Should().Be(customer.Address.StreetNumber);
@@ -75,10 +67,10 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
             var address = _fixture.GetValidAddress();
 
             var customer1 = _fixture.GetValidCustomer();
-            customer1.ChangeAddress(address, "unit.testing");
+            customer1.ChangeAddress(address);
 
             var customer2 = _fixture.GetValidCustomer();
-            customer2.ChangeAddress(address, "unit.testing");
+            customer2.ChangeAddress(address);
 
             var customers = new List<Customer> { customer1, customer2 };
 
@@ -92,10 +84,6 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
                 customer.Name.Should().Be(customerToCompare.Name);
                 customer.Document.Should().Be(customerToCompare.Document);
                 customer.IsActive.Should().Be(customerToCompare.IsActive);
-                customer.CreatedAt.Should().Be(customerToCompare.CreatedAt);
-                customer.CreatedBy.Should().Be(customerToCompare.CreatedBy);
-                customer.LastUpdatedAt.Should().Be(customerToCompare.LastUpdatedAt);
-                customer.LastUpdatedBy.Should().Be(customerToCompare.LastUpdatedBy);
 
                 customer.StreetName.Should().Be(customerToCompare.Address!.StreetName);
                 customer.StreetNumber.Should().Be(customerToCompare.Address.StreetNumber);
@@ -119,10 +107,6 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
             customer.Name.Should().Be(model.Name);
             customer.Document.Should().Be(model.Document);
             customer.IsActive.Should().Be(model.IsActive);
-            customer.CreatedAt.Should().Be(model.CreatedAt);
-            customer.CreatedBy.Should().Be(model.CreatedBy);
-            customer.LastUpdatedAt.Should().Be(model.LastUpdatedAt);
-            customer.LastUpdatedBy.Should().Be(model.LastUpdatedBy);
 
             customer.Address.Should().NotBeNull();
             customer.Address!.StreetName.Should().Be(customer.Address!.StreetName);
@@ -146,10 +130,6 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
             customer.Name.Should().Be(model.Name);
             customer.Document.Should().Be(model.Document);
             customer.IsActive.Should().Be(model.IsActive);
-            customer.CreatedAt.Should().Be(model.CreatedAt);
-            customer.CreatedBy.Should().Be(model.CreatedBy);
-            customer.LastUpdatedAt.Should().Be(model.LastUpdatedAt);
-            customer.LastUpdatedBy.Should().Be(model.LastUpdatedBy);
 
             customer.Address.Should().BeNull();
         }
@@ -174,10 +154,6 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Mappers
                 customer.Name.Should().Be(customerToCompare.Name);
                 customer.Document.Should().Be(customerToCompare.Document);
                 customer.IsActive.Should().Be(customerToCompare.IsActive);
-                customer.CreatedAt.Should().Be(customerToCompare.CreatedAt);
-                customer.CreatedBy.Should().Be(customerToCompare.CreatedBy);
-                customer.LastUpdatedAt.Should().Be(customerToCompare.LastUpdatedAt);
-                customer.LastUpdatedBy.Should().Be(customerToCompare.LastUpdatedBy);
 
                 customer.Address.Should().NotBeNull();
                 customer.Address!.StreetName.Should().Be(customerToCompare.StreetName);

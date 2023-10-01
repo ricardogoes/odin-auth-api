@@ -16,8 +16,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
             (
                 GetValidCustomerName(),
                 GetValidCustomerDocument(),
-                null,
-                GetValidUsername()
+                null
             );
 
         public CreateCustomerInput GetValidCreateCustomerInputWithAddress()
@@ -25,8 +24,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
             (
                 GetValidCustomerName(),
                 GetValidCustomerDocument(),
-                GetValidAddress(),
-                GetValidUsername()
+                GetValidAddress()
             );
 
         public CreateCustomerInput GetCreateCustomerInputWithEmptyName()
@@ -34,8 +32,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
             (
                 "",
                 GetValidCustomerDocument(),
-                GetValidAddress(),
-                GetValidUsername()
+                GetValidAddress()
             );
 
 
@@ -44,8 +41,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
             (
                 GetValidCustomerName(),
                 "",
-                GetValidAddress(),
-                GetValidUsername()
+                GetValidAddress()
             );
 
         public CreateCustomerInput GetCreateCustomerInputWithInvalidDocument()
@@ -53,19 +49,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
             (
                 GetValidCustomerName(),
                 "12.132.432/0002-12",
-                GetValidAddress(),
-                GetValidUsername()
+                GetValidAddress()
             );
-
-        public CreateCustomerInput GetCreateCustomerInputWithEmptyLoggedUsername()
-           => new
-           (
-               GetValidCustomerName(),
-               GetValidCustomerDocument(),
-                GetValidAddress(),
-               ""
-           );
     }
-
-
 }

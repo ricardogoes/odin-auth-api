@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using Moq.Contrib.HttpClient;
-using Odin.Auth.Domain.Exceptions;
 using Odin.Auth.Domain.Models.AppSettings;
-using Odin.Auth.Infra.Data.EF.Repositories;
 using Odin.Auth.Infra.Keycloak.Exceptions;
 using Odin.Auth.Infra.Keycloak.Models;
 using Odin.Auth.Infra.Keycloak.Repositories;
@@ -18,11 +17,17 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
     public class AuthKeycloakRepositoryTest
     {
         private readonly AuthKeycloakRepositoryTestFixture _fixture;
+
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly AppSettings _appSettings;
 
         public AuthKeycloakRepositoryTest(AuthKeycloakRepositoryTestFixture fixture)
         {
             _fixture = fixture;
+
+            _httpContextAccessorMock = new();
+            _httpContextAccessorMock.Setup(s => s.HttpContext!.User.Identity!.Name).Returns("unit.testing");
+
             _appSettings = _fixture.GetAppSettings();
         }
 
@@ -66,7 +71,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 PropertyNameCaseInsensitive = true
             });
 
-            var authRepository = new AuthKeycloakRepository(clientFactory, _appSettings);
+            var authRepository = new AuthKeycloakRepository(clientFactory, _httpContextAccessorMock.Object , _appSettings);
 
             var authResponse = await authRepository.AuthAsync("admin", "admin", CancellationToken.None);
 
@@ -115,7 +120,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 PropertyNameCaseInsensitive = true
             });
 
-            var authRepository = new AuthKeycloakRepository(clientFactory, _appSettings);
+            var authRepository = new AuthKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             var task = async () => await authRepository.AuthAsync("admin", "error", CancellationToken.None);
 
@@ -147,7 +152,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 return true;
             }).ReturnsResponse(HttpStatusCode.OK);
 
-            var authRepository = new AuthKeycloakRepository(clientFactory, _appSettings);
+            var authRepository = new AuthKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             await authRepository.LogoutAsync(userId, CancellationToken.None);            
         }
@@ -180,7 +185,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 PropertyNameCaseInsensitive = true
             });
 
-            var authRepository = new AuthKeycloakRepository(clientFactory, _appSettings);
+            var authRepository = new AuthKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             var task = async () => await authRepository.LogoutAsync(userId, CancellationToken.None);
 
@@ -214,7 +219,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 return true;
             }).ReturnsResponse(HttpStatusCode.OK);
 
-            var authRepository = new AuthKeycloakRepository(clientFactory, _appSettings);
+            var authRepository = new AuthKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             await authRepository.ChangePasswordAsync(user, CancellationToken.None);
         }
@@ -248,7 +253,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.Auth
                 PropertyNameCaseInsensitive = true
             });
 
-            var authRepository = new AuthKeycloakRepository(clientFactory, _appSettings);
+            var authRepository = new AuthKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             var task = async () => await authRepository.ChangePasswordAsync(user, CancellationToken.None);
 

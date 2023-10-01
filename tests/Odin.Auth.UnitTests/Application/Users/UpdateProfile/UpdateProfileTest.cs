@@ -37,7 +37,7 @@ namespace Odin.Auth.UnitTests.Application.Users.UpdateProfile
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<App.UpdateProfileInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _keycloakRepositoryMock.Setup(s => s.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _keycloakRepositoryMock.Setup(s => s.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(userToUpdate));
 
             _keycloakRepositoryMock.Setup(s => s.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -80,7 +80,7 @@ namespace Odin.Auth.UnitTests.Application.Users.UpdateProfile
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<App.UpdateProfileInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new NotFoundException($"User '{input.UserId}' not found"));
 
             var useCase = new App.UpdateProfile(_validatorMock.Object, _keycloakRepositoryMock.Object);
@@ -89,7 +89,7 @@ namespace Odin.Auth.UnitTests.Application.Users.UpdateProfile
 
             await task.Should().ThrowAsync<NotFoundException>();
 
-            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

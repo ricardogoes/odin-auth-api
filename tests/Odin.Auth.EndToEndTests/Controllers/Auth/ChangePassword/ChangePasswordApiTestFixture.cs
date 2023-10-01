@@ -14,9 +14,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
             : base()
         { }
 
-        public ChangePasswordInput GetValidChangePasswordInput(Guid tenantId)
+        public ChangePasswordInput GetValidChangePasswordInput()
         {
-            return new ChangePasswordInput(tenantId, CommonUserId, "admin", temporary: false);
+            return new ChangePasswordInput(CommonUserId, "admin", temporary: false);
         }
     }
 }

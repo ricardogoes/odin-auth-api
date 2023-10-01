@@ -28,7 +28,7 @@ namespace Odin.Auth.Application.Auth.ChangePassword
                 throw new EntityValidationException($"One or more validation errors occurred on type {nameof(input)}.", validationResult.ToDictionary());
             }
 
-            var user = await _userKeycloakRepository.FindByIdAsync(input.TenantId, input.UserId, cancellationToken);
+            var user = await _userKeycloakRepository.FindByIdAsync(input.UserId, cancellationToken);
             user.AddCredentials(new UserCredential(input.NewPassword, temporary: input.Temporary));
 
             await _authKeycloakRepository.ChangePasswordAsync(user, cancellationToken);

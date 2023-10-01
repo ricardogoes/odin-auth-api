@@ -17,8 +17,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.UpdateCustomer
             (
                 id: id,
                 name: GetValidName(),
-                document: GetValidDocument(),
-                loggedUsername: GetValidUsername()
+                document: GetValidDocument()
             );
 
         public UpdateCustomerInput GetInputWithIdEmpty()
@@ -26,8 +25,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.UpdateCustomer
             (
                 id: Guid.Empty,
                 name: GetValidName(),
-                document: GetValidDocument(),
-                loggedUsername: GetValidUsername()
+                document: GetValidDocument()
             );
 
 
@@ -36,8 +34,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.UpdateCustomer
             (
                 id: id,
                 name: "",
-                document: GetValidDocument(),
-                loggedUsername: GetValidUsername()
+                document: GetValidDocument()
             );
 
         public UpdateCustomerInput GetInputWithDocumentEmpty(Guid id)
@@ -45,8 +42,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.UpdateCustomer
             (
                 id: id,
                 name: GetValidName(),
-                document: "",
-                loggedUsername: GetValidUsername()
+                document: ""
             );
 
         public UpdateCustomerInput GetInputWithInvalidDocument(Guid id)
@@ -54,17 +50,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.UpdateCustomer
             (
                 id: id,
                 name: GetValidName(),
-                document: GetInvalidDocument(),
-                loggedUsername: GetValidUsername()
-            );
-
-        public UpdateCustomerInput GetInputWithUsernameEmpty(Guid id)
-            => new
-            (
-                id: id,
-                name: GetValidName(),
-                document: GetValidDocument(),
-                loggedUsername: ""
+                document: GetInvalidDocument()
             );
     }
 }

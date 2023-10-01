@@ -85,8 +85,7 @@ namespace Odin.Auth.UnitTests.Application.Auth.Login
 
             Func<Task> task = async () => await useCase.Handle(input, CancellationToken.None);
 
-            await task.Should()
-                .ThrowAsync<KeycloakException>();
+            await task.Should().ThrowAsync<KeycloakException>();
         }
     }
 }

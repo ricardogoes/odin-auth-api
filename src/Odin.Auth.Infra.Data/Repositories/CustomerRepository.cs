@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Odin.Auth.Domain.Entities;
 using Odin.Auth.Domain.Exceptions;
 using Odin.Auth.Domain.Interfaces;
@@ -10,29 +11,37 @@ using Odin.Infra.Data.Utilities.Sort;
 
 namespace Odin.Auth.Infra.Data.EF.Repositories
 {
-    public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository : BaseRepository, ICustomerRepository
     {
         private readonly OdinMasterDbContext _dbContext;
 
         private DbSet<CustomerModel> Customers => _dbContext.Set<CustomerModel>();
 
-        public CustomerRepository(OdinMasterDbContext dbContext)
+        public CustomerRepository(OdinMasterDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _dbContext = dbContext;
         }
 
         public async Task<Customer> InsertAsync(Customer customer, CancellationToken cancellationToken)
         {
-            await Customers.AddAsync(customer.ToCustomerModel(), cancellationToken);
+            var model = customer.ToCustomerModel();
+            model.SetAuditLog(GetCurrentUsername(), created: true);
 
-            return customer;
+            var customerInserted = await Customers.AddAsync(model, cancellationToken);
+
+            return customerInserted.Entity.ToCustomer();
 
         }
 
         public async Task<Customer> UpdateAsync(Customer customer, CancellationToken cancellationToken)
         {
-            await Task.FromResult(Customers.Update(customer.ToCustomerModel()));
-            return customer;
+            var model = customer.ToCustomerModel();
+            model.SetAuditLog(GetCurrentUsername(), created: false);
+
+            var customerUpdated = await Task.FromResult(Customers.Update(model));
+
+            return customerUpdated.Entity.ToCustomer(); ;
         }
 
         public async Task DeleteAsync(Customer customer)

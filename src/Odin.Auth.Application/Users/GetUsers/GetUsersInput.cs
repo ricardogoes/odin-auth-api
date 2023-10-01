@@ -1,10 +1,9 @@
 ﻿using MediatR;
 using Odin.Auth.Domain.Models;
-using Odin.Auth.Domain.SeedWork;
 
 namespace Odin.Auth.Application.Users.GetUsers
 {
-    public class GetUsersInput : Tenant, IRequest<PaginatedListOutput<UserOutput>>
+    public class GetUsersInput : IRequest<PaginatedListOutput<UserOutput>>
     {
         public int PageNumber { get; private set; }
         public int PageSize { get; private set; }
@@ -21,10 +20,9 @@ namespace Odin.Auth.Application.Users.GetUsers
         public DateTime? LastUpdatedAtStart { get; private set; }
         public DateTime? LastUpdatedAtEnd { get; private set; }
 
-        public GetUsersInput(Guid tenantId, int pageNumber, int pageSize, string? sort = null, string? username = null, string? firstName = null, string? lastName = null,
+        public GetUsersInput(int pageNumber, int pageSize, string? sort = null, string? username = null, string? firstName = null, string? lastName = null,
             string? email = null, bool? isActive = null, string? createdBy = null, DateTime? createdAtStart = null, DateTime? createdAtEnd = null,
             string? lastUpdatedBy = null, DateTime? lastUpdatedAtStart = null, DateTime? lastUpdatedAtEnd = null)
-            : base(tenantId)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;

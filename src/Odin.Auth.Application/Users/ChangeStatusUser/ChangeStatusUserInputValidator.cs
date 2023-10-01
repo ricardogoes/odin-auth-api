@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Odin.Auth.Application.Validators;
 
 namespace Odin.Auth.Application.Users.ChangeStatusUser
 {
@@ -7,7 +6,6 @@ namespace Odin.Auth.Application.Users.ChangeStatusUser
     {
         public ChangeStatusUserInputValidator()            
         {
-            Include(new TenantValidator());
             RuleFor(x => x.UserId).NotEmpty();
             RuleFor(x => x.Action).NotEmpty();
         }

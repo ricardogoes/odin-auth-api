@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Odin.Auth.Application.Customers.GetCustomers;
 using Odin.Auth.Domain.Exceptions;
@@ -11,10 +12,14 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
     public class CustomerRepositoryTest
     {
         private readonly CustomerRepositoryTestFixture _fixture;
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
 
         public CustomerRepositoryTest(CustomerRepositoryTestFixture fixture)
         {
             _fixture = fixture;
+
+            _httpContextAccessorMock = new();
+            _httpContextAccessorMock.Setup(s => s.HttpContext!.User.Identity!.Name).Returns("unit.testing");
         }
 
         [Fact(DisplayName = "InsertAsync() should insert a valid customer")]
@@ -24,7 +29,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
             var dbContext = _fixture.CreateDbContext();
             var exampleCustomer = _fixture.GetValidCustomer();
 
-            var repository = new CustomerRepository(dbContext);
+            var repository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
             var unitOfWork = new UnitOfWork(dbContext);
 
             await repository.InsertAsync(exampleCustomer, CancellationToken.None);
@@ -54,7 +59,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
             await dbContext.AddRangeAsync(exampleCustomersList);
             await dbContext.SaveChangesAsync(CancellationToken.None);
 
-            var customerRepository = new CustomerRepository(_fixture.CreateDbContext(true));
+            var customerRepository = new CustomerRepository(_fixture.CreateDbContext(true), _httpContextAccessorMock.Object);
 
             var dbCustomer = await customerRepository.FindByIdAsync(exampleCustomer.Id, CancellationToken.None);
 
@@ -76,7 +81,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
             await dbContext.AddRangeAsync(_fixture.GetValidCustomersModelList(15));
             await dbContext.SaveChangesAsync(CancellationToken.None);
 
-            var customerRepository = new CustomerRepository(dbContext);
+            var customerRepository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
 
             var task = async () => await customerRepository.FindByIdAsync(exampleId, CancellationToken.None);
 
@@ -98,10 +103,10 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
             await dbContext.AddRangeAsync(exampleCustomersList);
             await dbContext.SaveChangesAsync(CancellationToken.None);
 
-            exampleCustomer.Update(newCustomerValues.Name, newCustomerValues.Document, "unit.testing");
+            exampleCustomer.Update(newCustomerValues.Name, newCustomerValues.Document);
 
             dbContext = _fixture.CreateDbContext(true);
-            var customerRepository = new CustomerRepository(dbContext);
+            var customerRepository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
             var unitOfWork = new UnitOfWork(dbContext);
 
             await customerRepository.UpdateAsync(exampleCustomer, It.IsAny<CancellationToken>());
@@ -128,7 +133,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
             await dbContext.SaveChangesAsync(CancellationToken.None);
 
             dbContext = _fixture.CreateDbContext(true);
-            var customerRepository = new CustomerRepository(dbContext);
+            var customerRepository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
             var unitOfWork = new UnitOfWork(dbContext);
 
             await customerRepository.DeleteAsync(exampleCustomer);
@@ -157,7 +162,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
                 { "IsActive", searchInput.IsActive },
             };
 
-            var customerRepository = new CustomerRepository(dbContext);
+            var customerRepository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
             var output = await customerRepository.FindPaginatedListAsync(filters, searchInput.PageNumber, searchInput.PageSize, searchInput.Sort!, CancellationToken.None);
 
             output.Should().NotBeNull();
@@ -195,7 +200,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
                 { "IsActive", searchInput.IsActive },
             };
 
-            var customerRepository = new CustomerRepository(dbContext);
+            var customerRepository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
             var output = await customerRepository.FindPaginatedListAsync(filters, searchInput.PageNumber, searchInput.PageSize, searchInput.Sort!, CancellationToken.None);
 
             output.Should().NotBeNull();
@@ -220,7 +225,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
         public async Task SearchRetursEmptyWhenPersistenceIsEmpty()
         {
             var dbContext = _fixture.CreateDbContext();
-            var customerRepository = new CustomerRepository(dbContext);
+            var customerRepository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
             var searchInput = new GetCustomersInput(1, 20, name: "", document: "", isActive: true, sort: "");
             var filters = new Dictionary<string, object?>
             {
@@ -250,7 +255,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
             await dbContext.AddRangeAsync(exampleCustomersList);
             await dbContext.SaveChangesAsync(CancellationToken.None);
 
-            var customerRepository = new CustomerRepository(_fixture.CreateDbContext(true));
+            var customerRepository = new CustomerRepository(_fixture.CreateDbContext(true), _httpContextAccessorMock.Object);
 
             var dbCustomer = await customerRepository.FindByDocumentAsync(exampleCustomer.Document, CancellationToken.None);
 
@@ -272,7 +277,7 @@ namespace Odin.Auth.UnitTests.Infra.Data.EF.Repositories.Customer
             await dbContext.AddRangeAsync(_fixture.GetValidCustomersModelList(15));
             await dbContext.SaveChangesAsync(CancellationToken.None);
 
-            var customerRepository = new CustomerRepository(dbContext);
+            var customerRepository = new CustomerRepository(dbContext, _httpContextAccessorMock.Object);
 
             var task = async () => await customerRepository.FindByDocumentAsync(document, CancellationToken.None);
 

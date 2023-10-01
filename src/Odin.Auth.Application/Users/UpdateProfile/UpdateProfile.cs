@@ -25,7 +25,7 @@ namespace Odin.Auth.Application.Users.UpdateProfile
                 throw new EntityValidationException($"One or more validation errors occurred on type {nameof(input)}.", validationResult.ToDictionary());
             }
 
-            var user = await _keycloakRepository.FindByIdAsync(input.TenantId, input.UserId, cancellationToken);
+            var user = await _keycloakRepository.FindByIdAsync(input.UserId, cancellationToken);
             user.Update(input.FirstName, input.LastName, input.Email);
 
             user.RemoveAllGroups();
@@ -33,9 +33,6 @@ namespace Odin.Auth.Application.Users.UpdateProfile
             {
                 user.AddGroup(new UserGroup(group));
             }
-
-            user.AddAttribute(new KeyValuePair<string, string>("last_updated_at", DateTime.Now.ToString("o")));
-            user.AddAttribute(new KeyValuePair<string, string>("last_updated_by", input.LoggedUsername));
 
             await _keycloakRepository.UpdateUserAsync(user, cancellationToken);
 

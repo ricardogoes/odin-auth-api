@@ -30,62 +30,31 @@ namespace Odin.Auth.Domain.Entities
 
             Validate();
         }
+               
 
-        public void Create(string loggedUsername)
-        {
-            CreatedAt = DateTime.UtcNow;
-            CreatedBy = loggedUsername;
-            LastUpdatedAt = DateTime.UtcNow;
-            LastUpdatedBy = loggedUsername;
-
-            Validate();
-        }
-
-        public void Update(string newName, string? newDocument, string loggedUsername)
+        public void Update(string newName, string? newDocument)
         {
             Name = newName;
             Document = newDocument ?? Document;
-            LastUpdatedAt = DateTime.UtcNow;
-            LastUpdatedBy = loggedUsername;
 
             Validate();
-        }
+        }        
 
-        public void SetAuditLog(DateTime createdAt, string createdBy, DateTime lastUpdatedAt, string lastUpdatedBy)
-        {
-            CreatedAt = createdAt;
-            CreatedBy = createdBy;
-            LastUpdatedAt = lastUpdatedAt;
-            LastUpdatedBy = lastUpdatedBy;
-
-            Validate();
-        }
-
-        public void ChangeAddress(Address newAddress, string loggedUsername)
+        public void ChangeAddress(Address newAddress)
         {
             Address = newAddress;
-
-            LastUpdatedAt = DateTime.UtcNow;
-            LastUpdatedBy = loggedUsername;
-
             Validate();
         }
 
-        public void Activate(string loggedUsername)
+        public void Activate()
         {
             IsActive = true;
-            LastUpdatedAt = DateTime.UtcNow;
-            LastUpdatedBy = loggedUsername;
-
             Validate();
         }
 
-        public void Deactivate(string loggedUsername)
+        public void Deactivate()
         {
             IsActive = false;
-            LastUpdatedAt = DateTime.UtcNow;
-            LastUpdatedBy = loggedUsername;
-
             Validate();
         }
 

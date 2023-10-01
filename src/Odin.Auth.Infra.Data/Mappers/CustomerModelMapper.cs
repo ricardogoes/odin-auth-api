@@ -38,7 +38,7 @@ namespace Odin.Auth.Infra.Data.EF.Mappers
             if(!string.IsNullOrWhiteSpace(model.StreetName))
             { 
                 var address = new Address(model.StreetName, model.StreetNumber ?? 0, model.Complement ?? "", model.Neighborhood!, model.ZipCode!, model.City!, model.State!);
-                customer.ChangeAddress(address, "unit.testing");
+                customer.ChangeAddress(address);
             }
 
             customer.SetAuditLog(model.CreatedAt, model.CreatedBy, model.LastUpdatedAt, model.LastUpdatedBy);

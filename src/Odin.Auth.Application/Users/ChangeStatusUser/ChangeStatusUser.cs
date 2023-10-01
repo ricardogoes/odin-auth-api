@@ -25,7 +25,7 @@ namespace Odin.Auth.Application.Users.ChangeStatusUser
                 throw new EntityValidationException($"One or more validation errors occurred on type {nameof(input)}.", validationResult.ToDictionary());
             }
 
-            var user = await _keycloakRepository.FindByIdAsync(input.TenantId, input.UserId, cancellationToken);
+            var user = await _keycloakRepository.FindByIdAsync(input.UserId, cancellationToken);
 
             switch (input.Action)
             {
@@ -37,12 +37,9 @@ namespace Odin.Auth.Application.Users.ChangeStatusUser
                     break;
             }
 
-            user.AddAttribute(new KeyValuePair<string, string>("last_updated_at", DateTime.Now.ToString("o")));
-            user.AddAttribute(new KeyValuePair<string, string>("last_updated_by", input.LoggedUsername));
+            var userUpdated = await _keycloakRepository.UpdateUserAsync(user, cancellationToken);
 
-            await _keycloakRepository.UpdateUserAsync(user, cancellationToken);
-
-            return UserOutput.FromUser(user);
+            return UserOutput.FromUser(userUpdated);
         }
     }
 }

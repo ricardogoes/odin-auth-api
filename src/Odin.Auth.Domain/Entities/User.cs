@@ -14,8 +14,6 @@ namespace Odin.Auth.Domain.Entities
         public string LastName { get; private set; }
         public string Email { get; private set; }
 
-        //TODO: Implementar IsCustomerAdmin
-
         public Dictionary<string, string> Attributes { get; private set; }
         public List<UserCredential> Credentials { get; private set; }
         public List<UserGroup> Groups { get; set; }
@@ -49,16 +47,6 @@ namespace Odin.Auth.Domain.Entities
             Attributes = new Dictionary<string, string>();
             Credentials = new List<UserCredential>();
             Groups = new List<UserGroup>();
-
-            Validate();
-        }
-
-        public void SetAuditLog(DateTime createdAt, string createdBy, DateTime lastUpdatedAt, string lastUpdatedBy)
-        {
-            CreatedAt = createdAt;
-            CreatedBy = createdBy;
-            LastUpdatedAt = lastUpdatedAt;
-            LastUpdatedBy = lastUpdatedBy;
 
             Validate();
         }

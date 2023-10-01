@@ -25,7 +25,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);
 
-            var users = await _fixture.ApiClient.GetUsers(_fixture.TenantSinapseId, "admin.sinapse", "Odin@123!");
+            var users = await _fixture.ApiClient.GetUsers("admin.sinapse", "Odin@123!");
 
             var (response, output) = await _fixture.ApiClient.GetAsync<PaginatedApiResponse<UserOutput>>("/v1/users");
 
@@ -47,9 +47,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);
 
-            var users = await _fixture.ApiClient.GetUsers(_fixture.TenantSinapseId, "admin.sinapse", "Odin@123!");
+            var users = await _fixture.ApiClient.GetUsers("admin.sinapse", "Odin@123!");
 
-            var input = new GetUsersInput(_fixture.TenantSinapseId, 1, 5);
+            var input = new GetUsersInput(1, 5);
 
             var (response, output) = await _fixture.ApiClient.GetAsync<PaginatedApiResponse<UserOutput>>("/v1/users", input);
 
@@ -85,9 +85,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);
 
-            var users = await _fixture.ApiClient.GetUsers(_fixture.TenantSinapseId, "admin.sinapse", "Odin@123!"); 
+            var users = await _fixture.ApiClient.GetUsers("admin.sinapse", "Odin@123!"); 
             
-            var input = new GetUsersInput(_fixture.TenantSinapseId, page, pageSize);
+            var input = new GetUsersInput(page, pageSize);
 
             var (response, output) = await _fixture.ApiClient.GetAsync<PaginatedApiResponse<UserOutput>>("/v1/users", input);
 
@@ -120,9 +120,9 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);
 
-            var users = await _fixture.ApiClient.GetUsers(_fixture.TenantSinapseId, "admin.sinapse", "Odin@123!");
+            var users = await _fixture.ApiClient.GetUsers("admin.sinapse", "Odin@123!");
 
-            var input = new GetUsersInput(_fixture.TenantSinapseId, page, pageSize, username: search);
+            var input = new GetUsersInput(page, pageSize, username: search);
 
             var (response, output) = await _fixture.ApiClient.GetAsync<PaginatedApiResponse<UserOutput>>("/v1/users", input);
 
@@ -158,8 +158,8 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUsers
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);
 
-            var users = await _fixture.ApiClient.GetUsers(_fixture.TenantSinapseId, "admin.sinapse", "Odin@123!"); 
-            var input = new GetUsersInput(_fixture.TenantSinapseId, 1, 5, sort: orderBy);
+            var users = await _fixture.ApiClient.GetUsers("admin.sinapse", "Odin@123!"); 
+            var input = new GetUsersInput(1, 5, sort: orderBy);
 
             var (response, output) = await _fixture.ApiClient.GetAsync<PaginatedApiResponse<UserOutput>>("/v1/users", input);
 

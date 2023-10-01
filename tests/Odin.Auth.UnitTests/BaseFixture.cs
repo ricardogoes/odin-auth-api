@@ -15,6 +15,9 @@ namespace Odin.Auth.UnitTests
     {
         public Faker Faker { get; set; }
 
+        public Guid TenantSinapseId = Guid.Parse("5F9B7808-803F-4985-9996-6EBA9003F9CD");
+        public Guid TenantMerxId = Guid.Parse("BEC7E4B4-2E23-4536-9B01-DC9E8D66ED5A");
+
         protected BaseFixture()
             => Faker = new Faker("pt_BR");
 
@@ -88,7 +91,6 @@ namespace Odin.Auth.UnitTests
         public Customer GetValidCustomer()
         {
             var customer = new Customer(GetValidCustomerName(), GetValidCustomerDocument());
-            customer.Create("unit.testing");
             return customer;
         }
 

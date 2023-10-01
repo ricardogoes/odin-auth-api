@@ -22,8 +22,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
 
         public ChangeAddressCustomerInput GetAddressInputWithoutStreetName(Guid? id = null)
@@ -36,8 +35,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
 
         public ChangeAddressCustomerInput GetAddressInputWithoutStreetNumber(Guid? id = null)
@@ -50,8 +48,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
 
         public ChangeAddressCustomerInput GetAddressInputWithoutNeighborhood(Guid? id = null)
@@ -64,8 +61,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.ChangeAddressCustomer
                 neighborhood: "",
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
 
         public ChangeAddressCustomerInput GetAddressInputWithoutZipCode(Guid? id = null)
@@ -78,8 +74,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: "",
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
 
         public ChangeAddressCustomerInput GetAddressInputWithoutCity(Guid? id = null)
@@ -92,8 +87,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: "",
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
 
         public ChangeAddressCustomerInput GetAddressInputWithoutState(Guid? id = null)
@@ -106,8 +100,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: "",
-                loggedUsername: "unit.testing"
+                state: ""
             );
     }
 }

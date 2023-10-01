@@ -1,4 +1,5 @@
-﻿using Microsoft.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 using Odin.Auth.Domain.Entities;
 using Odin.Auth.Domain.Models.AppSettings;
 using Odin.Auth.Infra.Keycloak.Exceptions;
@@ -11,14 +12,14 @@ using System.Text.Json;
 
 namespace Odin.Auth.Infra.Keycloak.Repositories
 {
-    public class AuthKeycloakRepository : IAuthKeycloakRepository
+    public class AuthKeycloakRepository : BaseRepository, IAuthKeycloakRepository
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly JsonSerializerOptions _snakeCaseSerializeOptions;
-        private readonly JsonSerializerOptions _camelCaseSerializeOptions;
         private readonly AppSettings _appSettings;
 
-        public AuthKeycloakRepository(IHttpClientFactory httpClientFactory, AppSettings appSettings)
+        public AuthKeycloakRepository(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AppSettings appSettings)
+            : base(httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
             _appSettings = appSettings;
@@ -26,11 +27,6 @@ namespace Odin.Auth.Infra.Keycloak.Repositories
             _snakeCaseSerializeOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = new JsonSnakeCasePolicy(),
-                PropertyNameCaseInsensitive = true
-            };
-
-            _camelCaseSerializeOptions = new JsonSerializerOptions
-            {
                 PropertyNameCaseInsensitive = true
             };
         }

@@ -18,7 +18,7 @@ namespace Odin.Auth.EndToEndTests.Configurations
 
         private readonly Guid _tenantId; 
 
-        private const string USERNAME = "admin";
+        private const string USERNAME = "admin.sinapse";
         private const string PASSWORD = "Odin@123!";
 
         public ApiClient(HttpClient httpClient, AppSettings appSettings, Guid tenantId)
@@ -72,7 +72,7 @@ namespace Odin.Auth.EndToEndTests.Configurations
             return credentials!.AccessToken;
         }
 
-        public async Task<IEnumerable<UserRepresentation>> GetUsers(Guid tenantId, string user, string password)
+        public async Task<IEnumerable<UserRepresentation>> GetUsers(string user, string password)
         {
             var accessToken = GetAccessTokenAsync(user, password).Result; 
             
@@ -87,7 +87,7 @@ namespace Odin.Auth.EndToEndTests.Configurations
 
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
-                $"{keycloakUrlRealm}/users?q=tenant_id:{tenantId}");
+                $"{keycloakUrlRealm}/users?q=tenant_id:{_tenantId}");
 
             var response = await client.SendAsync(request);
 

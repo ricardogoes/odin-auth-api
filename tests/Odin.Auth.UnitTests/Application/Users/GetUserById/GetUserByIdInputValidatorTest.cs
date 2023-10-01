@@ -28,22 +28,6 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUserById
             validateResult.Errors[0].ErrorMessage.Should().Be("'User Id' must not be empty.");
         }
 
-        [Fact(DisplayName = "Validate() should not validate when tenantId is empty")]
-        [Trait("Application", "GetUserById / GetUserByIdInputValidator")]
-        public void DontValidateWhenEmptyTenantId()
-        {
-            ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = _fixture.GetInputWithEmtptyTenantId();
-            var validator = new App.GetUserByIdInputValidator();
-
-            var validateResult = validator.Validate(input);
-
-            validateResult.Should().NotBeNull();
-            validateResult.IsValid.Should().BeFalse();
-            validateResult.Errors.Should().HaveCount(1);
-            validateResult.Errors[0].ErrorMessage.Should().Be("'Tenant Id' must not be empty.");
-        }
-
         [Fact(DisplayName = "Validate() should validate with valid data")]
         [Trait("Application", "GetUserById / GetUserByIdInputValidator")]
         public void ValidateWhenValid()

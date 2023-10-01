@@ -18,6 +18,12 @@ namespace Odin.Auth.Application.Customers.GetCustomers
                 { "Name", input.Name },
                 { "Document", input.Document },
                 { "IsActive", input.IsActive },
+                { "CreatedBy", input.CreatedBy },
+                { "CreatedAtStart", input.CreatedAtStart },
+                { "CreatedAtEnd", input.CreatedAtEnd },
+                { "LastUpdatedBy", input.LastUpdatedBy },
+                { "LastUpdatedAtStart", input.LastUpdatedAtStart },
+                { "LastUpdatedAtEnd", input.LastUpdatedAtEnd }
             };
 
             var customers = await _repository.FindPaginatedListAsync(

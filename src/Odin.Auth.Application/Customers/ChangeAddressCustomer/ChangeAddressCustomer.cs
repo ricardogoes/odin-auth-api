@@ -31,7 +31,7 @@ namespace Odin.Auth.Application.Customers.ChangeAddressCustomer
             var customer = await _repository.FindByIdAsync(input.CustomerId, cancellationToken);
 
             var address = new Address(input.StreetName, input.StreetNumber, input.Complement, input.Neighborhood, input.ZipCode, input.City, input.State);
-            customer.ChangeAddress(address, input.LoggedUsername);
+            customer.ChangeAddress(address);
 
             await _repository.UpdateAsync(customer, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);

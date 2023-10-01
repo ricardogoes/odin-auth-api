@@ -28,7 +28,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
                 var context = await _fixture.CreateDbContextAsync();
                 await _fixture.SeedCustomerDataAsync(context);
 
-                var input = _fixture.GetValidChangePasswordInput(_fixture.TenantSinapseId);
+                var input = _fixture.GetValidChangePasswordInput();
                 var (response, _) = await _fixture.ApiClient.PostAsync<LoginOutput>($"/v1/auth/change-password", input);
 
                 response.Should().NotBeNull();
@@ -48,7 +48,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
             }
             finally
             {
-                var changePasswordInput = new ChangePasswordInput(_fixture.TenantSinapseId, _fixture.CommonUserId, "Odin@123!", temporary: false);
+                var changePasswordInput = new ChangePasswordInput(_fixture.CommonUserId, "Odin@123!", temporary: false);
                 await _fixture.ApiClient.PostAsync<LoginOutput>($"/v1/auth/change-password", changePasswordInput);
             }
         }
@@ -61,7 +61,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
             await _fixture.SeedCustomerDataAsync(context);
 
             ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new ChangePasswordInput(_fixture.TenantSinapseId, Guid.Empty, "new-password", temporary: true);
+            var input = new ChangePasswordInput(Guid.Empty, "new-password", temporary: true);
 
             var (response, output) = await _fixture.ApiClient.PostAsync<ProblemDetails>($"/v1/auth/change-password", input);
 
@@ -85,7 +85,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Auth.ChangePassword
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);
 
-            var input = new ChangePasswordInput(_fixture.TenantSinapseId, Guid.NewGuid(), "", temporary: true);
+            var input = new ChangePasswordInput(Guid.NewGuid(), "", temporary: true);
 
             var (response, output) = await _fixture.ApiClient.PostAsync<ProblemDetails>($"/v1/auth/change-password", input);
 

@@ -15,7 +15,6 @@ namespace Odin.Auth.UnitTests.Application.Auth.ChangePassword
         {
             return new ChangePasswordInput
             (
-                tenantId: Guid.NewGuid(),
                 userId: userId ?? Guid.NewGuid(),
                 newPassword: "new-password",
                 temporary: true
@@ -26,7 +25,6 @@ namespace Odin.Auth.UnitTests.Application.Auth.ChangePassword
         {
             return new ChangePasswordInput
             (
-                tenantId: Guid.NewGuid(),
                 userId: Guid.Empty,
                 newPassword: "new-password",
                 temporary: true
@@ -37,20 +35,8 @@ namespace Odin.Auth.UnitTests.Application.Auth.ChangePassword
         {
             return new ChangePasswordInput
             (
-                tenantId: Guid.NewGuid(),
                 userId: Guid.NewGuid(),
                 newPassword: "",
-                temporary: true
-            );
-        }
-
-        public ChangePasswordInput GetInputWithEmptyTenantId()
-        {
-            return new ChangePasswordInput
-            (
-                tenantId: Guid.Empty,
-                userId: Guid.NewGuid(),
-                newPassword: "new-password",
                 temporary: true
             );
         }

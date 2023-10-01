@@ -34,12 +34,11 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUserById
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<App.GetUserByIdInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(validUser);
 
             var input = new App.GetUserByIdInput
             (
-                tenantId: tenantId,
                 userId: validUser.Id
             );
 
@@ -55,7 +54,7 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUserById
             output.IsActive.Should().Be(validUser.IsActive);
             output.Id.Should().Be(validUser.Id);
 
-            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact(DisplayName = "Handle() should throw an error when validation failed")]
@@ -85,12 +84,11 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUserById
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<App.GetUserByIdInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _keycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new NotFoundException($"User '{guidToQuery}' not found"));
 
             var input = new App.GetUserByIdInput
             (
-                tenantId: tenantToQuery,
                 userId: guidToQuery
             );
 
@@ -99,7 +97,7 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUserById
             var task = async () => await useCase.Handle(input, CancellationToken.None);
 
             await task.Should().ThrowAsync<NotFoundException>();
-            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _keycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

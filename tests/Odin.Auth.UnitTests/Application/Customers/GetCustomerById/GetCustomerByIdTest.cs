@@ -52,7 +52,6 @@ namespace Odin.Auth.UnitTests.Application.Customers.GetCustomerById
             output.Document.Should().Be(validCustomer.Document);
             output.IsActive.Should().Be(validCustomer.IsActive);
             output.Id.Should().Be(validCustomer.Id);
-            output.CreatedAt.Should().Be(validCustomer.CreatedAt);
         }
 
         [Fact(DisplayName = "Handle() should throw an error when validation failed")]
