@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Odin.Auth.Api.Models.Users;
 using Odin.Auth.Application.Users;
-using Odin.Auth.Domain.Models;
+using Odin.Auth.Application.Users.CreateUser;
 using System.Net;
 using System.Text.Json;
 
@@ -51,7 +50,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
             nameof(CreateUserApiTestDataGenerator.GetInvalidInputs),
             MemberType = typeof(CreateUserApiTestDataGenerator)
         )]
-        public async Task ErrorWhenCantInstantiateUser(CreateUserApiRequest input, string property, string expectedDetail)
+        public async Task ErrorWhenCantInstantiateUser(CreateUserInput input, string property, string expectedDetail)
         {
             var context = await _fixture.CreateDbContextAsync();
             await _fixture.SeedCustomerDataAsync(context);

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using Moq.Contrib.HttpClient;
@@ -20,6 +21,8 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
     public class UserKeycloakRepositoryTest
     {
         private readonly UserKeycloakRepositoryTestFixture _fixture;
+
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly AppSettings _appSettings;
 
         private readonly List<UserRepresentation> _expectedUsers;
@@ -30,6 +33,10 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
         public UserKeycloakRepositoryTest(UserKeycloakRepositoryTestFixture fixture)
         {
             _fixture = fixture;
+
+            _httpContextAccessorMock = new();
+            _httpContextAccessorMock.Setup(s => s.HttpContext!.User.Identity!.Name).Returns("unit.testing");
+
             _appSettings = _fixture.GetAppSettings();
 
             _expectedUsers = new List<UserRepresentation>
@@ -79,7 +86,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 return true;
             }).ReturnsResponse(HttpStatusCode.OK);
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             await userRepository.CreateUserAsync(user, CancellationToken.None);
         }
@@ -115,7 +122,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 PropertyNameCaseInsensitive = true
             });
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             var task = async () => await userRepository.CreateUserAsync(user, CancellationToken.None);
 
@@ -138,7 +145,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     return client;
                 });
 
-            var user = _fixture.GetValidUser();
+            var user = _fixture.GetValidUser(_fixture.TenantSinapseId);
             var keycloakUrlRealm = $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}";
 
             handler.SetupRequest(HttpMethod.Put, keycloakUrlRealm, request =>
@@ -149,9 +156,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 return true;
             }).ReturnsResponse(HttpStatusCode.OK);
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
-            await userRepository.UpdateUserAsync(user, CancellationToken.None);
+            var userUpdated = await userRepository.UpdateUserAsync(user, CancellationToken.None);
+
+            userUpdated.Should().NotBeNull();
+            userUpdated!.Username.Should().Be(user.Username);
         }
 
         [Fact(DisplayName = "UpdateUserAsync() should throw an error with invalid data")]
@@ -184,7 +194,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 PropertyNameCaseInsensitive = true
             });
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             var task = async () => await userRepository.UpdateUserAsync(user, CancellationToken.None);
 
@@ -207,8 +217,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     return client;
                 });
 
-            var tenantId = Guid.NewGuid();
-            var user = _fixture.GetValidUser(tenantId);
+            var user = _fixture.GetValidUser(_fixture.TenantSinapseId);
             
             handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}")
                 .ReturnsJsonResponse(HttpStatusCode.OK, user.ToUserRepresentation());
@@ -216,9 +225,9 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
             handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/groups")
                 .ReturnsJsonResponse(HttpStatusCode.OK, user.Groups);
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
-            var userRepresentation = await userRepository.FindByIdAsync(tenantId, user.Id, CancellationToken.None);
+            var userRepresentation = await userRepository.FindByIdAsync(user.Id, CancellationToken.None);
 
             userRepresentation.Should().NotBeNull();
             userRepresentation.Id.Should().Be(user.Id);
@@ -257,9 +266,9 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     PropertyNameCaseInsensitive = true
                 });
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
-            var task = async () => await userRepository.FindByIdAsync(tenantId, user.Id, CancellationToken.None);
+            var task = async () => await userRepository.FindByIdAsync(user.Id, CancellationToken.None);
 
             await task.Should().ThrowAsync<KeycloakException>()
                 .WithMessage($"Error. ERROR DETAIL: ErrorDescription");
@@ -280,15 +289,14 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     return client;
                 });
 
-            var tenantId = Guid.NewGuid();
-            var user = _fixture.GetValidUser(tenantId);
+            var user = _fixture.GetValidUser(_fixture.TenantSinapseId);
 
             handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}")
                 .ReturnsResponse(HttpStatusCode.NotFound);
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
-            var task = async () => await userRepository.FindByIdAsync(tenantId, user.Id, CancellationToken.None);
+            var task = async () => await userRepository.FindByIdAsync(user.Id, CancellationToken.None);
 
             await task.Should().ThrowAsync<NotFoundException>()
                 .WithMessage($"User with ID '{user.Id}' not found");
@@ -315,9 +323,9 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
             handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}")
                 .ReturnsResponse(HttpStatusCode.NotFound);
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
-            var task = async () => await userRepository.FindByIdAsync(tenantId, user.Id, CancellationToken.None);
+            var task = async () => await userRepository.FindByIdAsync(user.Id, CancellationToken.None);
 
             await task.Should().ThrowAsync<NotFoundException>()
                 .WithMessage($"User with ID '{user.Id}' not found");
@@ -338,12 +346,10 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     return client;
                 });
 
-            var tenantId = Guid.NewGuid();
-
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/count?q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/count?q=tenant_id:{_fixture.TenantSinapseId}")
                 .ReturnsResponse("10");
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users?first=0&max={10}&q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users?first=0&max={10}&q=tenant_id:{_fixture.TenantSinapseId}")
                 .ReturnsJsonResponse(HttpStatusCode.OK, _expectedUsers.Take(10));
 
             foreach (var user in _expectedUsers.Take(10))
@@ -352,9 +358,9 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                 .ReturnsJsonResponse(HttpStatusCode.OK, new List<UserGroup> { new UserGroup(Guid.NewGuid(), user.Groups!.First(), $"/{user.Groups!.First()}")});
             }
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
-            var users = await userRepository.FindUsersAsync(tenantId, CancellationToken.None);
+            var users = await userRepository.FindUsersAsync(CancellationToken.None);
 
             users.Should().NotBeNull();
             users.Should().HaveCount(10);
@@ -375,21 +381,19 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     return client;
                 });
 
-            var tenantId = Guid.NewGuid();
-
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/count?q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/count?q=tenant_id:{_fixture.TenantSinapseId}")
                 .ReturnsResponse("10");
 
-            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users?first=0&max={10}&q=tenant_id:{tenantId}")
+            handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users?first=0&max={10}&q=tenant_id:{_fixture.TenantSinapseId}")
                 .ReturnsJsonResponse(HttpStatusCode.BadRequest, new KeycloakResponseError("Error", "ErrorDescription"), new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = new JsonSnakeCasePolicy(),
                     PropertyNameCaseInsensitive = true
                 });
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
-            var task = async () => await userRepository.FindUsersAsync(tenantId, CancellationToken.None);
+            var task = async () => await userRepository.FindUsersAsync(CancellationToken.None);
 
             await task.Should().ThrowAsync<KeycloakException>()
                 .WithMessage($"Error. ERROR DETAIL: ErrorDescription");
@@ -410,12 +414,12 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     return client;
                 });
 
-            var user = _fixture.GetValidUser();
+            var user = _fixture.GetValidUser(_fixture.TenantSinapseId);
 
             handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/groups")
                 .ReturnsJsonResponse(HttpStatusCode.OK, user.Groups);
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             var groups = await userRepository.FindGroupsByUserIdAsync(user.Id, CancellationToken.None);
 
@@ -438,7 +442,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     return client;
                 });
 
-            var user = _fixture.GetValidUser();
+            var user = _fixture.GetValidUser(_fixture.TenantSinapseId);
 
             handler.SetupRequest(HttpMethod.Get, $"{_appSettings.KeycloakSettings!.AuthServerUrl}/admin/realms/{_appSettings.KeycloakSettings!.Realm}/users/{user.Id}/groups")
                 .ReturnsJsonResponse(HttpStatusCode.BadRequest, new KeycloakResponseError("Error", "ErrorDescription"), new JsonSerializerOptions
@@ -447,7 +451,7 @@ namespace Odin.Auth.UnitTests.Keycloak.Repositories.User
                     PropertyNameCaseInsensitive = true
                 });
 
-            var userRepository = new UserKeycloakRepository(clientFactory, _appSettings);
+            var userRepository = new UserKeycloakRepository(clientFactory, _httpContextAccessorMock.Object, _appSettings);
 
             var task = async () => await userRepository.FindGroupsByUserIdAsync(user.Id, CancellationToken.None);
 

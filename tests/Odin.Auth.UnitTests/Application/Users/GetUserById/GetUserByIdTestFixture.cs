@@ -11,15 +11,7 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUserById
         public GetUserByIdInput GetValidGetUserByIdInput(Guid? id = null)
             => new
             (
-                tenantId: Guid.NewGuid(),
                 userId: id ?? Guid.NewGuid()
-            );
-
-        public GetUserByIdInput GetInputWithEmtptyTenantId()
-            => new
-            (
-                tenantId: Guid.Empty,
-                userId: Guid.NewGuid()
             );
     }
 }

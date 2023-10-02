@@ -22,8 +22,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
         }
 
@@ -38,8 +37,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
         }
 
@@ -54,8 +52,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
         }
 
@@ -70,8 +67,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
         }
 
@@ -86,8 +82,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: string.Empty,
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
         }
 
@@ -102,8 +97,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: string.Empty,
                 city: Faker.Address.City(),
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
         }
 
@@ -118,8 +112,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: string.Empty,
-                state: Faker.Address.StateAbbr(),
-                loggedUsername: "unit.testing"
+                state: Faker.Address.StateAbbr()
             );
         }
 
@@ -134,8 +127,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.ChangeAddressCustomer
                 neighborhood: Faker.Address.CardinalDirection(),
                 zipCode: Faker.Address.ZipCode(),
                 city: Faker.Address.City(),
-                state: string.Empty,
-                loggedUsername: "unit.testing"
+                state: string.Empty
             );
         }
     }

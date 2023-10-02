@@ -33,10 +33,10 @@ namespace Odin.Auth.Application.Customers.ChangeStatusCustomer
             switch (input.Action)
             {
                 case ChangeStatusAction.ACTIVATE:
-                    customer.Activate(input.LoggedUsername);
+                    customer.Activate();
                     break;
                 case ChangeStatusAction.DEACTIVATE:
-                    customer.Deactivate(input.LoggedUsername);
+                    customer.Deactivate();
                     break;
             }
 

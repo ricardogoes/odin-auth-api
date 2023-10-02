@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Odin.Auth.Application.Validators;
 
 namespace Odin.Auth.Application.Users.UpdateProfile
 {
@@ -7,7 +6,6 @@ namespace Odin.Auth.Application.Users.UpdateProfile
     {
         public UpdateProfileInputValidator()
         {
-            Include(new TenantValidator());
             RuleFor(x => x.UserId).NotEmpty();
             RuleFor(x => x.FirstName).NotEmpty();
             RuleFor(x => x.LastName).NotEmpty();

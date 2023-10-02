@@ -12,5 +12,13 @@
         {
             Id = id ?? Guid.NewGuid();
         }
+
+        public void SetAuditLog(DateTime createdAt, string createdBy, DateTime lastUpdatedAt, string lastUpdatedBy)
+        {
+            CreatedAt = createdAt;
+            CreatedBy = createdBy;
+            LastUpdatedAt = lastUpdatedAt;
+            LastUpdatedBy = lastUpdatedBy;
+        }
     }
 }

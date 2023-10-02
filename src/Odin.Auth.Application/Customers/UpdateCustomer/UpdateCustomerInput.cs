@@ -7,14 +7,12 @@ namespace Odin.Auth.Application.Customers.UpdateCustomer
         public Guid Id { get; private set; }
         public string Name { get; private set; }
         public string Document { get; private set; }
-        public string LoggedUsername { get; private set; }
 
-        public UpdateCustomerInput(Guid id, string name, string document, string loggedUsername)
+        public UpdateCustomerInput(Guid id, string name, string document)
         {
             Id = id;
             Name = name;
             Document = document;
-            LoggedUsername = loggedUsername;
         }
 
         public void ChangeId(Guid id)
@@ -25,11 +23,6 @@ namespace Odin.Auth.Application.Customers.UpdateCustomer
         public void ChangeDocument(string document)
         {
             Document = document;
-        }
-
-        public void ChangeLoggedUsername(string username)
-        {
-            LoggedUsername = username;
         }
     }
 }

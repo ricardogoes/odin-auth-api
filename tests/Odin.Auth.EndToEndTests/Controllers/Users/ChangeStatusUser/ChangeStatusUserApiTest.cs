@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Odin.Auth.Application.Users;
-using Odin.Auth.Domain.Models;
 using System.Net;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
@@ -33,9 +32,6 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             output.Id.Should().Be(_fixture.CommonUserId);
-            output.Username.Should().Be("baseline.sinapse");
-            output.FirstName.Should().Be("Baseline");
-            output.LastName.Should().Be("Sinapse");
             output.IsActive.Should().BeTrue();
         }
 
@@ -56,9 +52,6 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.ChangeStatusUser
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
 
                 output.Id.Should().Be(_fixture.CommonUserId);
-                output.Username.Should().Be("baseline.sinapse");
-                output.FirstName.Should().Be("Baseline");
-                output.LastName.Should().Be("Sinapse");
                 output.IsActive.Should().BeFalse();
             }
             finally

@@ -24,7 +24,7 @@ namespace Odin.Auth.Application.Users.GetUserById
                 throw new EntityValidationException($"One or more validation errors occurred on type {nameof(input)}.", validationResult.ToDictionary());
             }
 
-            var user = await _keycloakRepository.FindByIdAsync(input.TenantId, input.UserId, cancellationToken);
+            var user = await _keycloakRepository.FindByIdAsync(input.UserId, cancellationToken);
 
             return UserOutput.FromUser(user);
         }

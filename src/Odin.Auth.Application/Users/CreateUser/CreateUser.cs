@@ -36,15 +36,9 @@ namespace Odin.Auth.Application.Users.CreateUser
                 input.Groups.ForEach(group => user.AddGroup(new UserGroup(group)));
             }
 
-            user.AddAttribute(new KeyValuePair<string, string>("tenant_id", input.TenantId.ToString()));
-            user.AddAttribute(new KeyValuePair<string, string>("created_at", DateTime.Now.ToString("o")));
-            user.AddAttribute(new KeyValuePair<string, string>("created_by", input.LoggedUsername!));
-            user.AddAttribute(new KeyValuePair<string, string>("last_updated_at", DateTime.Now.ToString("o")));
-            user.AddAttribute(new KeyValuePair<string, string>("last_updated_by", input.LoggedUsername!));
+            var userInserted = await _keycloakRepository.CreateUserAsync(user, cancellationToken);
 
-            await _keycloakRepository.CreateUserAsync(user, cancellationToken);
-
-            return UserOutput.FromUser(user);
+            return UserOutput.FromUser(userInserted);
         }
     }
 }

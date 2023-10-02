@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Api.Models.Users;
+﻿using Odin.Auth.Application.Users.UpdateProfile;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
 {
@@ -12,7 +12,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
             : base()
         { }
 
-        public UpdateProfileApiRequest GetValidInput(Guid id)
+        public UpdateProfileInput GetValidInput(Guid id)
             => new
             (
                 userId: id, 
@@ -22,7 +22,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
                 groups: new List<string> { "test-group-01", "test-group-02" }
             );
 
-        public UpdateProfileApiRequest GetInputWithIdEmpty()
+        public UpdateProfileInput GetInputWithIdEmpty()
              => new
             (
                 userId: Guid.Empty,
@@ -33,7 +33,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
             );
 
 
-        public UpdateProfileApiRequest GetInputWithFirstNameEmpty(Guid id)
+        public UpdateProfileInput GetInputWithFirstNameEmpty(Guid id)
              => new
             (
                 userId: id,
@@ -43,7 +43,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
                 groups: new List<string> { "aaa" }
             );
 
-        public UpdateProfileApiRequest GetInputWithLastNameEmpty(Guid id)
+        public UpdateProfileInput GetInputWithLastNameEmpty(Guid id)
              => new
             (
                 userId: id,
@@ -53,7 +53,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.UpdateUser
                 groups: new List<string> { "aaa" }
             );
 
-        public UpdateProfileApiRequest GetInputWithEmailEmpty(Guid id)
+        public UpdateProfileInput GetInputWithEmailEmpty(Guid id)
              => new
             (
                 userId: id,

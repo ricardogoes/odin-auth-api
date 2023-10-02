@@ -399,4 +399,6 @@ FodyWeavers.xsd
 
 /.sonar/scanner
 /.docker/postgres-data
-*.env
+
+/.env
+/tests/Odin.Auth.EndToEndTests/.env

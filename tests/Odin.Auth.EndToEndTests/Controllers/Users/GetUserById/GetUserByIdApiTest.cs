@@ -31,9 +31,6 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.GetUserById
             response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
 
             output.Id.Should().Be(_fixture.CommonUserId);
-            output.Username.Should().Be("baseline.sinapse");
-            output.FirstName.Should().Be("Baseline");
-            output.LastName.Should().Be("Sinapse");
             output.IsActive.Should().BeTrue();
                         
             output.Groups.Should().NotBeNull();

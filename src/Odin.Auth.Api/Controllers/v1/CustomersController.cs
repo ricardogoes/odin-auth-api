@@ -39,7 +39,13 @@ namespace Odin.Auth.Api.Controllers.v1
             [FromQuery(Name = "sort")] string? Sort = null,
             [FromQuery(Name = "name")] string? Name = null,
             [FromQuery(Name = "document")] string? Document = null,
-            [FromQuery(Name = "is_active")] bool? IsActive = null)
+            [FromQuery(Name = "is_active")] bool? IsActive = null,
+            [FromQuery(Name = "created_by")] string? createdBy = null,
+            [FromQuery(Name = "last_updated_by")] string? lastUpdatedBy = null,
+            [FromQuery(Name = "created_at_start")] DateTime? createdAtStart = null,
+            [FromQuery(Name = "created_at_end")] DateTime? createdAtEnd = null,
+            [FromQuery(Name = "last_updated_at_start")] DateTime? LastUpdatedAtStart = null,
+            [FromQuery(Name = "last_updated_at_end")] DateTime? LastUpdatedAtEnd = null)
         {
             var input = new GetCustomersInput
             (
@@ -48,7 +54,13 @@ namespace Odin.Auth.Api.Controllers.v1
                 sort: Utils.GetSortParam(Sort),
                 name: !string.IsNullOrWhiteSpace(Name) ? Name : "",
                 document: !string.IsNullOrWhiteSpace(Document) ? Document : "",
-                isActive: IsActive
+                isActive: IsActive,
+                createdBy: createdBy,
+                createdAtStart: createdAtStart,
+                createdAtEnd: createdAtEnd,
+                lastUpdatedBy: lastUpdatedBy,
+                lastUpdatedAtStart: LastUpdatedAtStart,
+                lastUpdatedAtEnd: LastUpdatedAtEnd
             );
 
             var paginatedCustomers = await _mediator.Send(input, cancellationToken);
@@ -74,11 +86,8 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(CustomerOutput), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> Create([FromBody] CreateCustomerApiRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] CreateCustomerInput input, CancellationToken cancellationToken)
         {
-
-            var loggedUsername = User.Identity!.Name!;
-            var input = new CreateCustomerInput(request.Name, request.Document, request.Address, loggedUsername);
 
             var customerCreated = await _mediator.Send(input, cancellationToken);
 
@@ -93,13 +102,10 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCustomerApiRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCustomerInput input, CancellationToken cancellationToken)
         {
-            if (id == Guid.Empty || id != request.Id)
+            if (id == Guid.Empty || id != input.Id)
                 throw new BadRequestException("Invalid request");
-
-            var loggedUsername = User.Identity!.Name!;
-            var input = new UpdateCustomerInput(request.Id, request.Name, request.Document, loggedUsername);
 
             var customerUpdated = await _mediator.Send(input, cancellationToken);
 
@@ -118,13 +124,10 @@ namespace Odin.Auth.Api.Controllers.v1
             if (action.ToUpper() != "ACTIVATE" && action.ToUpper() != "DEACTIVATE")
                 throw new BadRequestException("Invalid action. Only ACTIVATE or DEACTIVATE values are allowed");
 
-            var loggedUsername = User.Identity!.Name!;
-
             var customerUpdated = await _mediator.Send(new ChangeStatusCustomerInput
             (
                 id,
-                (ChangeStatusAction)Enum.Parse(typeof(ChangeStatusAction), action, true),
-                loggedUsername
+                (ChangeStatusAction)Enum.Parse(typeof(ChangeStatusAction), action, true)
             ), cancellationToken);
 
             return Ok(customerUpdated);
@@ -136,12 +139,11 @@ namespace Odin.Auth.Api.Controllers.v1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ChangeAddress([FromRoute] Guid id, [FromBody] ChangeAddressCustomerApiRequest request, CancellationToken cancellationToken)
         {
-            if (id == Guid.Empty || id != request.CustomerId)
+            if (id == Guid.Empty)
                 throw new BadRequestException("Invalid request");
 
-            var loggedUsername = User.Identity!.Name!;
             var input = new ChangeAddressCustomerInput(id, request.StreetName, request.StreetNumber, request.Neighborhood, 
-                request.ZipCode, request.City, request.State, loggedUsername, request.Complement);
+                request.ZipCode, request.City, request.State, request.Complement);
 
             var customerUpdated = await _mediator.Send(input, cancellationToken);
 

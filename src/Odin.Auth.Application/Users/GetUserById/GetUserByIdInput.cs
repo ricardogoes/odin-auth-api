@@ -3,12 +3,11 @@ using Odin.Auth.Domain.SeedWork;
 
 namespace Odin.Auth.Application.Users.GetUserById
 {
-    public class GetUserByIdInput : Tenant, IRequest<UserOutput>
+    public class GetUserByIdInput : IRequest<UserOutput>
     {
         public Guid UserId { get; private set; }
 
-        public GetUserByIdInput(Guid tenantId, Guid userId)
-            : base(tenantId)
+        public GetUserByIdInput(Guid userId)
         {
             UserId = userId;
         }

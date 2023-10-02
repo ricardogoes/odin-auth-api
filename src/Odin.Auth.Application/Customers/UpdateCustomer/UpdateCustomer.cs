@@ -30,7 +30,7 @@ namespace Odin.Auth.Application.Customers.UpdateCustomer
             }
 
             var customer = await _repository.FindByIdAsync(input.Id, cancellationToken);
-            customer.Update(input.Name, input.Document, input.LoggedUsername);
+            customer.Update(input.Name, input.Document);
 
             var isDocumentUnique = await _documentService.IsDocumentUnique(customer, cancellationToken);
             if (!isDocumentUnique)

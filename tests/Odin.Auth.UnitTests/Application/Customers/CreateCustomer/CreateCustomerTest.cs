@@ -8,7 +8,6 @@ using Odin.Auth.Domain.Entities;
 using Odin.Auth.Domain.Exceptions;
 using Odin.Auth.Domain.Interfaces;
 using Odin.Auth.Infra.Data.EF.Interfaces;
-using Odin.Auth.Infra.Keycloak.Interfaces;
 using App = Odin.Auth.Application.Customers.CreateCustomer;
 
 namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
@@ -74,7 +73,6 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
             output.Document.Should().Be(expectedCustomerInserted.Document);
             output.IsActive.Should().BeTrue();
             output.Id.Should().NotBeEmpty();
-            output.CreatedAt.Should().NotBeSameDateAs(default);
         }
 
         [Fact(DisplayName = "Handle() should create a customer with address")]
@@ -86,6 +84,8 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
 
             var input = _fixture.GetValidCreateCustomerInputWithAddress();
             var customerToInsert = new Customer(input.Name, input.Document, isActive: true);
+            customerToInsert.ChangeAddress(input.Address!);
+            
             var expectedCustomerInserted = new CustomerOutput
             (
                 Guid.NewGuid(),
@@ -118,7 +118,6 @@ namespace Odin.Auth.UnitTests.Application.Customers.CreateCustomer
             output.Document.Should().Be(expectedCustomerInserted.Document);
             output.IsActive.Should().BeTrue();
             output.Id.Should().NotBeEmpty();
-            output.CreatedAt.Should().NotBeSameDateAs(default);
 
             output.Address.Should().NotBeNull();
             output.Address!.StreetName.Should().Be(input.Address!.StreetName);

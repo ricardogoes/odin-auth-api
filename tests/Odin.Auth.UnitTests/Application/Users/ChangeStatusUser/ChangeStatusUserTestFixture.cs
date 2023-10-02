@@ -15,28 +15,22 @@ namespace Odin.Auth.UnitTests.Application.Users.ChangeStatusUser
         public ChangeStatusUserInput GetValidChangeStatusUserInputToActivate(Guid? id = null)
             => new
             (
-               Guid.NewGuid(),
                 id ?? Guid.NewGuid(),
-                ChangeStatusAction.ACTIVATE,
-                loggedUsername: "admin"
+                ChangeStatusAction.ACTIVATE
             );
 
         public ChangeStatusUserInput GetValidChangeStatusUserInputToDeactivate(Guid? id = null)
             => new
             (
-               Guid.NewGuid(),
                 id ?? Guid.NewGuid(),
-                ChangeStatusAction.DEACTIVATE,
-                loggedUsername: "admin"
+                ChangeStatusAction.DEACTIVATE
             );
 
         public ChangeStatusUserInput GetChangeStatusUserInputWithEmptyAction(Guid? id = null)
           => new
           (
-             Guid.NewGuid(),
               id ?? Guid.NewGuid(),
-              null,
-              loggedUsername: "admin"
+              null
           );
     }
 }

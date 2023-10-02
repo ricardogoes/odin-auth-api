@@ -39,7 +39,7 @@ namespace Odin.Auth.UnitTests.Application.Auth.ChangePassword
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangePasswordInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _userKeycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), input.UserId, It.IsAny<CancellationToken>()))
+            _userKeycloakRepositoryMock.Setup(x => x.FindByIdAsync(input.UserId, It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(_fixture.GetValidUser()));
 
             _authKeycloakRepositoryMock.Setup(s => s.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -77,7 +77,7 @@ namespace Odin.Auth.UnitTests.Application.Auth.ChangePassword
             _validatorMock.Setup(s => s.ValidateAsync(It.IsAny<ChangePasswordInput>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(new ValidationResult()));
 
-            _userKeycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            _userKeycloakRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new NotFoundException($"User '{input.UserId}' not found"));
 
             var useCase = new App.ChangePassword(_validatorMock.Object, _authKeycloakRepositoryMock.Object, _userKeycloakRepositoryMock.Object);
@@ -86,7 +86,7 @@ namespace Odin.Auth.UnitTests.Application.Auth.ChangePassword
 
             await task.Should().ThrowAsync<NotFoundException>();
 
-            _userKeycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
+            _userKeycloakRepositoryMock.Verify(x => x.FindByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

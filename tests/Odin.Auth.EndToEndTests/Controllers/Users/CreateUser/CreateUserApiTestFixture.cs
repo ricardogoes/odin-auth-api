@@ -1,4 +1,4 @@
-﻿using Odin.Auth.Api.Models.Users;
+﻿using Odin.Auth.Application.Users.CreateUser;
 
 namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
 {
@@ -12,7 +12,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
             : base()
         { }
 
-        public CreateUserApiRequest GetValidInput()
+        public CreateUserInput GetValidInput()
             => new
             (
                 username: Faker.Person.UserName, 
@@ -24,7 +24,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
                 groups: new List<string> { "odin.baseline" }
             );
 
-        public CreateUserApiRequest GetInputWithUsernameEmpty()
+        public CreateUserInput GetInputWithUsernameEmpty()
             => new
             (
                 username: "",
@@ -36,7 +36,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
                 groups: new List<string> { "odin.baseline" }
             );
 
-        public CreateUserApiRequest GetInputWithPasswordEmpty()
+        public CreateUserInput GetInputWithPasswordEmpty()
             => new
             (
                 username: Faker.Person.UserName,
@@ -48,7 +48,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
                 groups: new List<string> { "odin.baseline" }
             );
 
-        public CreateUserApiRequest GetInputWithFirstNameEmpty()
+        public CreateUserInput GetInputWithFirstNameEmpty()
             => new
             (
                 username: Faker.Person.UserName,
@@ -60,7 +60,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
                 groups: new List<string> { "odin.baseline" }
             );
 
-        public CreateUserApiRequest GetInputWithLastNameEmpty()
+        public CreateUserInput GetInputWithLastNameEmpty()
             => new
             (
                 username: Faker.Person.UserName,
@@ -72,7 +72,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
                 groups: new List<string> { "odin.baseline" }
             );
 
-        public CreateUserApiRequest GetInputWithEmailEmpty()
+        public CreateUserInput GetInputWithEmailEmpty()
             => new
             (
                 username: Faker.Person.UserName,
@@ -84,7 +84,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Users.CreateUser
                 groups: new List<string> { "odin.baseline" }
             );
 
-        public CreateUserApiRequest GetInputWithGroupsEmpty()
+        public CreateUserInput GetInputWithGroupsEmpty()
             => new
             (
                 username: Faker.Person.UserName,

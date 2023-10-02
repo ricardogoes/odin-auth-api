@@ -40,16 +40,14 @@ namespace Odin.Auth.Application.Customers.CreateCustomer
 
             if(input.Address is not null)
             {
-                customer.ChangeAddress(input.Address, input.LoggedUsername);
+                customer.ChangeAddress(input.Address);
             }
 
-            customer.Create(input.LoggedUsername);
-
-            await _customerRepository.InsertAsync(customer, cancellationToken);
+            var insertedCustomer = await _customerRepository.InsertAsync(customer, cancellationToken);
 
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            return CustomerOutput.FromCustomer(customer);
+            return CustomerOutput.FromCustomer(insertedCustomer);
         }
     }
 }

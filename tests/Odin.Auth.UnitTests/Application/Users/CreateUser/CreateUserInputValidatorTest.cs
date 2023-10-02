@@ -19,15 +19,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: _fixture.Faker.Person.UserName,
                 password: "unit.testing",
                 passwordIsTemporary: true,
                 firstName: "",
                 lastName: _fixture.Faker.Person.LastName,
                 email: _fixture.Faker.Person.Email,
-                groups: new List<string> { "role-01" },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01" }
             );
 
             var validator = new CreateUserInputValidator();
@@ -47,15 +45,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: _fixture.Faker.Person.UserName,
                 password: "unit.testing",
                 passwordIsTemporary: true,
                 firstName: _fixture.Faker.Person.FirstName,
                 lastName: "",
                 email: _fixture.Faker.Person.Email,
-                groups: new List<string> { "role-01" },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01" }
             );
 
             var validator = new CreateUserInputValidator();
@@ -75,15 +71,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: _fixture.Faker.Person.UserName,
                 password: "unit.testing",
                 passwordIsTemporary: true,
                 firstName: _fixture.Faker.Person.FirstName,
                 lastName: _fixture.Faker.Person.LastName,
                 email: "",
-                groups: new List<string> { "role-01" },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01" }
             );
 
             var validator = new CreateUserInputValidator();
@@ -105,15 +99,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: _fixture.Faker.Person.UserName,
                 password: "unit.testing",
                 passwordIsTemporary: true,
                 firstName: _fixture.Faker.Person.FirstName,
                 lastName: _fixture.Faker.Person.LastName,
                 email: email,
-                groups: new List<string> { "role-01" },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01" }
             );
 
             var validator = new CreateUserInputValidator();
@@ -133,15 +125,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: "",
                 password: "unit.testing",
                 passwordIsTemporary: true,
                 firstName: _fixture.Faker.Person.FirstName,
                 lastName: _fixture.Faker.Person.LastName,
                 email: _fixture.Faker.Person.Email,
-                groups: new List<string> { "role-01" },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01" }
             );
 
             var validator = new CreateUserInputValidator();
@@ -161,15 +151,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: _fixture.Faker.Person.UserName,
                 password: "",
                 passwordIsTemporary: true,
                 firstName: _fixture.Faker.Person.FirstName,
                 lastName: _fixture.Faker.Person.LastName,
                 email: _fixture.Faker.Person.Email,
-                groups: new List<string> { "role-01" },
-                loggedUsername: "admin"
+                groups: new List<string> { "role-01" }
             );
 
             var validator = new CreateUserInputValidator();
@@ -189,15 +177,13 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             ValidatorOptions.Global.LanguageManager.Enabled = false;
             var input = new CreateUserInput
             (
-                tenantId: Guid.NewGuid(),
                 username: _fixture.Faker.Person.UserName,
                 password: "new-password",
                 passwordIsTemporary: true,
                 firstName: _fixture.Faker.Person.FirstName,
                 lastName: _fixture.Faker.Person.LastName,
                 email: _fixture.Faker.Person.Email,
-                groups: new List<string>(),
-                loggedUsername: "admin"
+                groups: new List<string>()
             );
 
             var validator = new CreateUserInputValidator();
@@ -210,32 +196,6 @@ namespace Odin.Auth.UnitTests.Application.Users.CreateUser
             validateResult.Errors[0].ErrorMessage.Should().Be("'Groups' must not be empty.");
         }
 
-        [Fact(DisplayName = "Validate() should not validate when tenant Id is empty")]
-        [Trait("Application", "CreateUser / CreateUserInputValidator")]
-        public void DontValidateWhenEmptyTenantId()
-        {
-            ValidatorOptions.Global.LanguageManager.Enabled = false;
-            var input = new CreateUserInput
-            (
-                tenantId: Guid.Empty,
-                username: _fixture.Faker.Person.UserName,
-                password: "password",
-                passwordIsTemporary: true,
-                firstName: _fixture.Faker.Person.FirstName,
-                lastName: _fixture.Faker.Person.LastName,
-                email: _fixture.Faker.Person.Email,
-                groups: new List<string> { "role-01" },
-                loggedUsername: "admin"
-            );
-
-            var validator = new CreateUserInputValidator();
-
-            var validateResult = validator.Validate(input);
-
-            validateResult.Should().NotBeNull();
-            validateResult.IsValid.Should().BeFalse();
-            validateResult.Errors.Should().HaveCount(1);
-            validateResult.Errors[0].ErrorMessage.Should().Be("'Tenant Id' must not be empty.");
-        }
+        
     }
 }

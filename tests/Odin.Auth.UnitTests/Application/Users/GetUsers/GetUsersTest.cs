@@ -15,9 +15,6 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         private readonly Mock<IUserKeycloakRepository> _keycloakRepositoryMock;
         private readonly PaginatedListOutput<User> _expectedUsers;
 
-        private readonly Guid _tenant1 = Guid.NewGuid();
-        private readonly Guid _tenant2 = Guid.NewGuid();
-
         public GetUsersTest(GetUsersTestFixture fixture)
         {
             _fixture = fixture;
@@ -28,21 +25,21 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
                 totalItems: 15,
                 items: new List<User>
                 {
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant1),
-                    _fixture.GetValidUser(_tenant2),
-                    _fixture.GetValidUser(_tenant2),
-                    _fixture.GetValidUser(_tenant2)
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantSinapseId),
+                    _fixture.GetValidUser(_fixture.TenantMerxId),
+                    _fixture.GetValidUser(_fixture.TenantMerxId),
+                    _fixture.GetValidUser(_fixture.TenantMerxId)
                 }
             );
         }
@@ -51,11 +48,11 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10), CancellationToken.None);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(12);
@@ -69,13 +66,13 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_OrderedByUsername()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
-            var orderedList = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString()).OrderBy(x => x.Username);
+            var orderedList = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).OrderBy(x => x.Username);
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, sort: "username"), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, sort: "username"), CancellationToken.None);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(12);
@@ -94,11 +91,11 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByUsername()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, username: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).Username), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, username: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).Username), CancellationToken.None);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(1);
@@ -113,13 +110,13 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByFirstName()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, firstName: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).FirstName), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, firstName: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).FirstName), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.FirstName == _expectedUsers.Items.First().FirstName);
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString() && x.FirstName == _expectedUsers.Items.First().FirstName);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());
@@ -133,13 +130,13 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByLastName()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, lastName: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).LastName), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, lastName: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).LastName), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.LastName == _expectedUsers.Items.First().LastName);
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString() && x.LastName == _expectedUsers.Items.First().LastName);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());
@@ -153,11 +150,11 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByEmail()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, email: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).Email), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, email: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).Email), CancellationToken.None);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(1);
@@ -172,13 +169,13 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByIsActive()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, isActive: true), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, isActive: true), CancellationToken.None);
 
-            var activeUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.IsActive);
+            var activeUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString() && x.IsActive);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(activeUsers.Count());
@@ -192,13 +189,13 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByCreatedBy()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, createdBy: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).Attributes["created_by"]), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, createdBy: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).Attributes["created_by"]), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.CreatedBy == _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).CreatedBy);
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString() && x.CreatedBy == _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).CreatedBy);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());
@@ -215,13 +212,13 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByLastUpdatedBy()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, lastUpdatedBy: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).Attributes["last_updated_by"]), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, lastUpdatedBy: _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).Attributes["last_updated_by"]), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && x.LastUpdatedBy == _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _tenant1.ToString()).LastUpdatedBy);
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString() && x.LastUpdatedBy == _expectedUsers.Items.First(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString()).LastUpdatedBy);
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());
@@ -238,16 +235,16 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByCratedAt()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var startDate = new DateTime(2023, 9, 1);
             var endDate = DateTime.Now;
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, createdAtStart: startDate, createdAtEnd: endDate), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, createdAtStart: startDate, createdAtEnd: endDate), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && (x.CreatedAt >= startDate && x.CreatedAt <= endDate));
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString() && (x.CreatedAt >= startDate && x.CreatedAt <= endDate));
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());
@@ -267,16 +264,16 @@ namespace Odin.Auth.UnitTests.Application.Users.GetUsers
         [Trait("Application", "GetUsers / GetUsers")]
         public async Task GetUsers_FilteredByLastUpdatedAt()
         {
-            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(_tenant1, CancellationToken.None))
-                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString())));
+            _keycloakRepositoryMock.Setup(s => s.FindUsersAsync(CancellationToken.None))
+                .Returns(() => Task.FromResult(_expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString())));
 
             var startDate = new DateTime(2023, 9, 1);
             var endDate = DateTime.Now;
 
             var useCase = new App.GetUsers(_keycloakRepositoryMock.Object);
-            var users = await useCase.Handle(new App.GetUsersInput(_tenant1, 1, 10, lastUpdatedAtStart: startDate, lastUpdatedAtEnd: endDate), CancellationToken.None);
+            var users = await useCase.Handle(new App.GetUsersInput(1, 10, lastUpdatedAtStart: startDate, lastUpdatedAtEnd: endDate), CancellationToken.None);
 
-            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _tenant1.ToString() && (x.LastUpdatedAt >= startDate && x.LastUpdatedAt <= endDate));
+            var filteredUsers = _expectedUsers.Items.Where(x => x.Attributes["tenant_id"] == _fixture.TenantSinapseId.ToString() && (x.LastUpdatedAt >= startDate && x.LastUpdatedAt <= endDate));
 
             users.Should().NotBeNull();
             users.TotalItems.Should().Be(filteredUsers.Count());

@@ -17,8 +17,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.CreateCustomer
             (
                 name: GetValidName(),
                 document: GetValidDocument(),
-                address: GetValidAddress(),
-                loggedUsername: GetValidUsername()
+                address: GetValidAddress()
             );
 
         public CreateCustomerInput GetInputWithNameEmpty()
@@ -26,8 +25,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.CreateCustomer
             (
                 name: "",
                 document: GetValidDocument(),
-                address: GetValidAddress(),
-                loggedUsername: GetValidUsername()
+                address: GetValidAddress()
             );
 
         public CreateCustomerInput GetInputWithDocumentEmpty()
@@ -35,8 +33,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.CreateCustomer
             (
                 name: GetValidName(),
                 document: "",
-                address: GetValidAddress(),
-                loggedUsername: GetValidUsername()
+                address: GetValidAddress()
             );
 
         public CreateCustomerInput GetInputWithInvalidDocument()
@@ -44,17 +41,7 @@ namespace Odin.Auth.EndToEndTests.Controllers.Customers.CreateCustomer
             (
                 name: GetValidName(),
                 document: GetInvalidDocument(),
-                address: GetValidAddress(),
-                loggedUsername: GetValidUsername()
-            );
-
-        public CreateCustomerInput GetInputWithUsernameEmpty()
-            => new
-            (
-                name: GetValidName(),
-                document: GetValidDocument(),
-                address: GetValidAddress(),
-                loggedUsername: ""
+                address: GetValidAddress()
             );
     }
 }

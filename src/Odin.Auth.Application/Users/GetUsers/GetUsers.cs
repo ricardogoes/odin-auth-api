@@ -19,7 +19,7 @@ namespace Odin.Auth.Application.Users.GetUsers
         public async Task<PaginatedListOutput<UserOutput>> Handle(GetUsersInput input, CancellationToken cancellationToken)
         {
 
-            var users = await _keycloakRepository.FindUsersAsync(input.TenantId, cancellationToken);
+            var users = await _keycloakRepository.FindUsersAsync(cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(input.Username))
                 users = users.Where(x => x.Username == input.Username);

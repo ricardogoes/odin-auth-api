@@ -1,5 +1,4 @@
-﻿using Odin.Auth.UnitTests.Application.Customers;
-using Odin.Auth.Application.Customers.UpdateCustomer;
+﻿using Odin.Auth.Application.Customers.UpdateCustomer;
 
 namespace Odin.Auth.UnitTests.Application.Customers.UpdateCustomer
 {
@@ -17,8 +16,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.UpdateCustomer
             (
                 id ?? Guid.NewGuid(),
                 GetValidCustomerName(),
-                GetValidCustomerDocument(),                
-                GetValidUsername()
+                GetValidCustomerDocument()
             );
 
         public UpdateCustomerInput GetUpdateCustomerInputWithEmptyName(Guid? id = null)
@@ -26,8 +24,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.UpdateCustomer
             (
                 id ?? Guid.NewGuid(),
                 "",
-                GetValidCustomerDocument(),
-                GetValidUsername()
+                GetValidCustomerDocument()
             );
 
 
@@ -36,8 +33,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.UpdateCustomer
             (
                 id ?? Guid.NewGuid(),
                 GetValidCustomerName(),
-                "",
-                GetValidUsername()
+                ""
             );
 
         public UpdateCustomerInput GetUpdateCustomerInputWithInvalidDocument(Guid? id = null)
@@ -45,17 +41,7 @@ namespace Odin.Auth.UnitTests.Application.Customers.UpdateCustomer
             (
                 id ?? Guid.NewGuid(),
                 GetValidCustomerName(),
-                "12.312.534/0002-12",
-                GetValidUsername()
+                "12.312.534/0002-12"
             );
-
-        public UpdateCustomerInput GetUpdateCustomerInputWithEmptyLoggedUsername(Guid? id = null)
-           => new
-           (
-               id ?? Guid.NewGuid(),
-               GetValidCustomerName(),
-               GetValidCustomerDocument(),
-               ""
-           );
     }
 }

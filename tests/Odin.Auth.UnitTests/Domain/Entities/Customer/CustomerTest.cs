@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Odin.Auth.Domain.Exceptions;
-using Odin.Auth.Domain.Entities;
 using DomainEntity = Odin.Auth.Domain.Entities;
 
 namespace Odin.Auth.UnitTests.Domain.Entities.Customer
@@ -83,7 +82,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.Customer
             var validCustomer = _fixture.GetValidCustomer();
 
             var customer = new DomainEntity.Customer(validCustomer.Name, validCustomer.Document, isActive: false);
-            customer.Activate("unit.testing");
+            customer.Activate();
 
             customer.IsActive.Should().BeTrue();
         }
@@ -95,7 +94,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.Customer
             var validCustomer = _fixture.GetValidCustomer();
 
             var customer = new DomainEntity.Customer(validCustomer.Name, validCustomer.Document, isActive: true);
-            customer.Deactivate("unit.testing");
+            customer.Deactivate();
 
             customer.IsActive.Should().BeFalse();
         }
@@ -107,7 +106,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.Customer
             var customer = _fixture.GetValidCustomer();
             var address = _fixture.GetValidAddress();
 
-            customer.ChangeAddress(address, "unit.testing");
+            customer.ChangeAddress(address);
 
             customer.Address.Should().NotBeNull();
             customer.Address!.StreetName.Should().Be(address.StreetName);
@@ -119,19 +118,6 @@ namespace Odin.Auth.UnitTests.Domain.Entities.Customer
             customer.Address.State.Should().Be(address.State);
         }
 
-        [Fact(DisplayName = "Create() should create a customer with valid CreatedAt and CreatedBy")]
-        [Trait("Domain", "Entities / Customer")]
-        public void Create()
-        {
-            var customer = _fixture.GetValidCustomer();
-            var loggedUsername = _fixture.GetValidUsername();
-
-            customer.Create(loggedUsername);
-
-            customer.CreatedAt.Should().NotBeSameDateAs(default);
-            customer.CreatedBy.Should().Be(loggedUsername);
-        }
-
         [Fact(DisplayName = "Update() should update a customer")]
         [Trait("Domain", "Entities / Customer")]
         public void Update()
@@ -139,7 +125,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.Customer
             var customer = _fixture.GetValidCustomer();
             var customerWithNewValues = _fixture.GetValidCustomer();
 
-            customer.Update(customerWithNewValues.Name, customerWithNewValues.Document, "unit.testing");
+            customer.Update(customerWithNewValues.Name, customerWithNewValues.Document);
 
             customer.Name.Should().Be(customerWithNewValues.Name);
             customer.Document.Should().Be(customerWithNewValues.Document);
@@ -153,7 +139,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.Customer
             var newName = _fixture.GetValidCustomerName();
             var currentDocument = customer.Document;
 
-            customer.Update(newName, null, "unit.testing");
+            customer.Update(newName, null);
 
             customer.Name.Should().Be(newName);
             customer.Document.Should().Be(currentDocument);
@@ -168,7 +154,7 @@ namespace Odin.Auth.UnitTests.Domain.Entities.Customer
         {
             var customer = _fixture.GetValidCustomer();
             Action action =
-                () => customer.Update(name!, null, "unit.testing");
+                () => customer.Update(name!, null);
 
             action.Should().Throw<EntityValidationException>()
                 .WithMessage("Name should not be empty or null");
