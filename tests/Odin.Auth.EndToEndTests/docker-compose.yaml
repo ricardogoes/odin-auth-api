@@ -6,8 +6,8 @@ services:
     hostname: odin_keycloak_db_e2e
     image: postgres
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: tIiefwntHebhEXI78twf
+      POSTGRES_USER: ${DB_ROOT_USERNAME}
+      POSTGRES_PASSWORD: ${DB_ROOT_PASSWORD}
     command: postgres -c 'max_connections=200' && postgres -c 'shared_buffers=24MB' 
     volumes:      
       - ./.docker/db/create-databases.sql:/docker-entrypoint-initdb.d/create-databases.sql
@@ -25,11 +25,11 @@ services:
       KC_DB: postgres
       KC_DB_URL_HOST: odin_keycloak_db_e2e
       KC_DB_URL_DATABASE: odin_keycloak
-      KC_DB_USERNAME: root
-      KC_DB_PASSWORD: tIiefwntHebhEXI78twf
+      KC_DB_USERNAME: ${DB_ROOT_USERNAME}
+      KC_DB_PASSWORD: ${DB_ROOT_PASSWORD}
       KC_DB_SCHEMA: public
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin     
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}     
     volumes:
       - .docker/keycloak:/opt/keycloak/data/import
     networks: [default]

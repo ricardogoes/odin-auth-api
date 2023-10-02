@@ -396,7 +396,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
 /.sonar/scanner
 /.docker/postgres-data
+
 /.env
 /tests/Odin.Auth.EndToEndTests/.env
